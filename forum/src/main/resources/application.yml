@@ -1,0 +1,24 @@
+# application.yml
+# Spring 全局配置
+spring:
+  application:
+      name: 论坛项目 #
+  output:
+      ansi:
+        enabled: ALWAYS # 控制台输出彩⾊⽇志\
+
+server:
+  port: 58080
+
+logging:
+  pattern:
+    dateformat:
+      default: yyyy-MM-dd HH:mm:ss # 定义默认的日期时间格式
+  file:
+    path: D:\log\project\forum  #⽇志保存⽬录
+  level:
+    root: INFO # 全局日志级别
+    com.example.forum: DEBUG # 指定包的日志级别
+
+
+
