@@ -7,8 +7,16 @@ spring:
       ansi:
         enabled: ALWAYS # 控制台输出彩⾊⽇志\
 
+  datasource:
+    url: jdbc:mysql://localhost:3306/forum_db?useSSL=false&serverTimezone=UTC
+    username: root
+    password: xzy13579
+    driver-class-name: com.mysql.cj.jdbc.Driver
 server:
   port: 58080
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml # MyBatis 映射文件位置
 
 logging:
   pattern:
