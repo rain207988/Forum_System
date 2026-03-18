@@ -3,6 +3,8 @@ package com.xzy.forum.dao;
 import com.xzy.forum.model.Article;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface ArticleMapper {
     int insert(Article row);
@@ -16,4 +18,6 @@ public interface ArticleMapper {
     int updateByPrimaryKeyWithBLOBs(Article row);
 
     int updateByPrimaryKey(Article row);
+
+    List<Article> selectAll();
 }

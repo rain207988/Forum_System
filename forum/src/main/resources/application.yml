@@ -12,21 +12,49 @@ spring:
     username: root
     password: xzy13579
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss # ⽇期格式
+    default-property-inclusion: NON_NULL # 不为null时序列化
+
 server:
   port: 58080
 
 mybatis:
-  mapper-locations: classpath:mapper/*.xml # MyBatis 映射文件位置
+  mapper-locations: classpath:mapper/**/*.xml # MyBatis 映射文件位置（包括子目录）
+
+
 
 logging:
   pattern:
     dateformat:
       default: yyyy-MM-dd HH:mm:ss # 定义默认的日期时间格式
   file:
-    path: D:\log\project\forum  #⽇志保存⽬录
+    path: ./logs  #⽇志保存⽬录
   level:
     root: INFO # 全局日志级别
-    com.example.forum: DEBUG # 指定包的日志级别
+    com.xzy.forum: DEBUG # 指定包的日志级别
 
+# SpringDoc OpenAPI (Swagger) 配置
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+    doc-expansion: none
+  default-flat-param-object: true
+  packages-to-scan: com.xzy.forum.controller
+
+# 项⽬⾃定义相关配置
+forum:
+  login:
+    url: sign-in.html # 未登录状况下强制跳转⻚⾯
+
+  index:
+    board_num: 9 # 首页显示的板块数量
 
 

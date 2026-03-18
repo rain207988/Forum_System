@@ -1,11 +1,15 @@
 package com.xzy.forum.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-
 @Data
+@AllArgsConstructor
+//无参构造器注解
+@NoArgsConstructor
 public class Article {
     private Long id;
 
@@ -31,5 +35,7 @@ public class Article {
 
     private String content;
 
+    //关联对象
+    User user;
 
 }
