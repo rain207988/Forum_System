@@ -20,4 +20,6 @@ public interface ArticleMapper {
     int updateByPrimaryKey(Article row);
 
     List<Article> selectAll();
+
+    List<Article> selectAllByBoardId(Long boardId);
 }

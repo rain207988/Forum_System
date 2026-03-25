@@ -7,6 +7,7 @@ import com.xzy.forum.dao.BoardMapper;
 import com.xzy.forum.dao.UserMapper;
 import com.xzy.forum.exception.ApplicationException;
 import com.xzy.forum.model.Article;
+import com.xzy.forum.model.Board;
 import com.xzy.forum.services.IArticleService;
 import com.xzy.forum.services.IBoardService;
 import com.xzy.forum.services.IUserService;
@@ -79,5 +80,26 @@ public class ArticleServiceImpl implements IArticleService {
         List<Article> result = articleMapper.selectAll();
         //得到的结果，谁用谁校验，此处是controller层去校验，所以service层不校验是否为空
         return result;
+    }
+
+    @Override
+    public List<Article> selectAllByBoardId(Long boardId) {
+
+        //参数的非空校验
+        if(boardId == null || boardId <= 0){
+            log.warn(ResultCode.FAILED_PARAMS_VALIDATE.toString());
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_PARAMS_VALIDATE));
+        }
+
+        //检测板块是否存在
+        Board board = iBoardService.selectById(boardId);
+        if(board == null){
+            log.warn(ResultCode.FAILED_BOARD_NOT_EXISTS.toString() + "，boardId = " + boardId);
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_BOARD_NOT_EXISTS));
+        }
+
+        List<Article> articles = articleMapper.selectAllByBoardId(boardId);
+
+        return articles;
     }
 }

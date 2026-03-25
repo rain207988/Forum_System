@@ -17,5 +17,6 @@ public interface IArticleService {
 
     List<Article> selectAll();
 
+    List<Article> selectAllByBoardId(Long boardId);
 
 }

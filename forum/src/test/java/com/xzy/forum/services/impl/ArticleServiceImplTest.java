@@ -33,4 +33,12 @@ class ArticleServiceImplTest {
         System.out.println(articles);
 
     }
+
+    @Test
+    void selectAllByBoardId() {
+
+        List<Article> articles = articleService.selectAllByBoardId(10l);
+        System.out.println(articles);
+
+    }
 }
