@@ -19,7 +19,25 @@ public interface ArticleMapper {
 
     int updateByPrimaryKey(Article row);
 
+
+    /**
+     * 查询所有帖子列表,用于首页展示
+     * @return
+     */
+
     List<Article> selectAll();
 
+    /**
+     * 根据帖子id查询帖子详情
+     * @param id
+     * @return
+     */
+    Article selectById(Long id);
+
+    /**
+     * 根据板块id查询所有帖子列表
+     * @param boardId
+     * @return
+     */
     List<Article> selectAllByBoardId(Long boardId);
 }

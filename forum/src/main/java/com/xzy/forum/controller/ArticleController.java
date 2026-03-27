@@ -111,6 +111,17 @@ private IArticleService iArticleService;
                 return AppResult.success(board);
         }
 
+    /**
+     * 获取文章详情
+     * @param id 文章 ID
+     * @return 文章详情对象，如果不存在则返回错误信息
+     */
+    @GetMapping("/details")
+    public AppResult<Article> getDetails(@RequestParam("id") @NonNull Long id) {
 
+        Article article = iArticleService.selectDetailById(id);
+        //service层已经校验了文章是否存在，所以这里不需要再校验了，直接返回结果即可
+        return AppResult.success(article);
+    }
 
 }

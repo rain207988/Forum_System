@@ -38,4 +38,7 @@ public class Article {
     //关联对象
     User user;
 
+    //关联对象
+    Board board;
+
 }

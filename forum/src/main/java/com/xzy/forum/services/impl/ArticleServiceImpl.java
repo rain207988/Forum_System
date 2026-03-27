@@ -102,4 +102,39 @@ public class ArticleServiceImpl implements IArticleService {
 
         return articles;
     }
+
+    @Override
+    public Article selectDetailById(Long id) {
+        //参数检验
+        if(id == null || id <= 0){
+            log.warn(ResultCode.FAILED_PARAMS_VALIDATE.toString());
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_PARAMS_VALIDATE));
+        }
+
+        //调用Mapper层的selectById方法
+        Article article = articleMapper.selectById(id);
+
+        if(article == null){
+            log.warn(ResultCode.FAILED_ARTICLE_NOT_EXISTS.toString() + "，id = " + id);
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_ARTICLE_NOT_EXISTS));
+        }
+
+        //在数据库更新文章的访问次数
+        Article updateArticle = new Article();
+        updateArticle.setId(article.getId());
+        updateArticle.setVisitCount(article.getVisitCount() + 1);
+
+        //动态更新
+        int row = articleMapper.updateByPrimaryKeySelective(updateArticle);
+        if(row != 1){
+            log.warn(ResultCode.ERROR_SERVICES.toString());
+            throw new ApplicationException(AppResult.failed(ResultCode.ERROR_SERVICES));
+        }
+
+        //返回更新后的数据对象给前端
+        article.setVisitCount(updateArticle.getVisitCount());
+
+
+        return article;
+    }
 }

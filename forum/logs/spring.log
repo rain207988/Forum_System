@@ -1,58 +1,48 @@
-2026-03-19T00:46:57.762+08:00  INFO 35196 --- [论坛项目] [restartedMain] com.xzy.forum.ForumApplication           : Starting ForumApplication using Java 17.0.12 with PID 35196 (D:\code_java\forum\Forum_System\forum\target\classes started by 37535 in D:\code_java\forum\Forum_System\forum)
-2026-03-19T00:46:57.767+08:00 DEBUG 35196 --- [论坛项目] [restartedMain] com.xzy.forum.ForumApplication           : Running with Spring Boot v4.0.3, Spring v7.0.5
-2026-03-19T00:46:57.767+08:00  INFO 35196 --- [论坛项目] [restartedMain] com.xzy.forum.ForumApplication           : No active profile set, falling back to 1 default profile: "default"
-2026-03-19T00:46:57.801+08:00  INFO 35196 --- [论坛项目] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2026-03-19T00:46:57.801+08:00  INFO 35196 --- [论坛项目] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2026-03-19T00:46:58.578+08:00  INFO 35196 --- [论坛项目] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 58080 (http)
-2026-03-19T00:46:58.588+08:00  INFO 35196 --- [论坛项目] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-03-19T00:46:58.589+08:00  INFO 35196 --- [论坛项目] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
-2026-03-19T00:46:58.620+08:00  INFO 35196 --- [论坛项目] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 818 ms
-2026-03-19T00:46:58.988+08:00  INFO 35196 --- [论坛项目] [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
-2026-03-19T00:46:59.261+08:00  INFO 35196 --- [论坛项目] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 58080 (http) with context path '/'
-2026-03-19T00:46:59.266+08:00  INFO 35196 --- [论坛项目] [restartedMain] com.xzy.forum.ForumApplication           : Started ForumApplication in 1.866 seconds (process running for 2.436)
-2026-03-19T00:47:05.499+08:00  INFO 35196 --- [论坛项目] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
-2026-03-19T00:47:05.618+08:00  INFO 35196 --- [论坛项目] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
-2026-03-19T15:29:31.980+08:00  INFO 19312 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Starting ArticleServiceImplTest using Java 17.0.12 with PID 19312 (started by 37535 in D:\code_java\forum\Forum_System\forum)
-2026-03-19T15:29:31.981+08:00 DEBUG 19312 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Running with Spring Boot v4.0.3, Spring v7.0.5
-2026-03-19T15:29:31.983+08:00  INFO 19312 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : No active profile set, falling back to 1 default profile: "default"
-2026-03-19T15:29:33.509+08:00  INFO 19312 --- [论坛项目] [main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
-2026-03-19T15:29:33.981+08:00  INFO 19312 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Started ArticleServiceImplTest in 2.357 seconds (process running for 3.696)
-2026-03-19T15:29:34.594+08:00  INFO 19312 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-03-19T15:29:34.792+08:00  INFO 19312 --- [论坛项目] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2ae88712
-2026-03-19T15:29:34.793+08:00  INFO 19312 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-03-19T15:29:34.799+08:00 DEBUG 19312 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : ==>  Preparing: select id, name, articleCount, sort, state, deleteState, createTime, updateTime from t_board where id = ?
-2026-03-19T15:29:34.816+08:00 DEBUG 19312 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : ==> Parameters: 1(Long)
-2026-03-19T15:29:34.846+08:00 DEBUG 19312 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : <==      Total: 1
-2026-03-19T15:29:34.852+08:00 DEBUG 19312 --- [论坛项目] [main] c.x.f.d.A.selectAllByBoardId             : ==>  Preparing: SELECT u.id AS u_id, u.nickname AS u_nickname, u.avatarUrl AS u_avatarUrl, a.id, a.boardId, a.userId, a.title, a.visitCount, a.replyCount, a.likeCount, a.state, a.createTime, a.updateTime from t_article a, t_user u where a.userId = u.id and a.deleteState = 0 and a.boardId = ? order by a.createTime desc
-2026-03-19T15:29:34.855+08:00 DEBUG 19312 --- [论坛项目] [main] c.x.f.d.A.selectAllByBoardId             : ==> Parameters: 1(Long)
-2026-03-19T15:29:34.872+08:00 DEBUG 19312 --- [论坛项目] [main] c.x.f.d.A.selectAllByBoardId             : <==      Total: 2
-2026-03-19T15:29:34.905+08:00  INFO 19312 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2026-03-19T15:29:34.933+08:00  INFO 19312 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
-2026-03-19T15:30:21.642+08:00  INFO 20640 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Starting ArticleServiceImplTest using Java 17.0.12 with PID 20640 (started by 37535 in D:\code_java\forum\Forum_System\forum)
-2026-03-19T15:30:21.643+08:00 DEBUG 20640 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Running with Spring Boot v4.0.3, Spring v7.0.5
-2026-03-19T15:30:21.643+08:00  INFO 20640 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : No active profile set, falling back to 1 default profile: "default"
-2026-03-19T15:30:22.793+08:00  INFO 20640 --- [论坛项目] [main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
-2026-03-19T15:30:23.236+08:00  INFO 20640 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Started ArticleServiceImplTest in 1.859 seconds (process running for 2.592)
-2026-03-19T15:30:23.836+08:00  INFO 20640 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-03-19T15:30:23.984+08:00  INFO 20640 --- [论坛项目] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2ae88712
-2026-03-19T15:30:23.986+08:00  INFO 20640 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-03-19T15:30:23.990+08:00 DEBUG 20640 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : ==>  Preparing: select id, name, articleCount, sort, state, deleteState, createTime, updateTime from t_board where id = ?
-2026-03-19T15:30:24.007+08:00 DEBUG 20640 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : ==> Parameters: 10(Long)
-2026-03-19T15:30:24.021+08:00 DEBUG 20640 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : <==      Total: 0
-2026-03-19T15:30:24.026+08:00  WARN 20640 --- [论坛项目] [main] c.x.f.services.impl.ArticleServiceImpl   : code = 2001, message = 数据为空，boardId = 10
-2026-03-19T15:30:24.059+08:00  INFO 20640 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2026-03-19T15:30:24.066+08:00  INFO 20640 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
-2026-03-19T15:31:12.600+08:00  INFO 15736 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Starting ArticleServiceImplTest using Java 17.0.12 with PID 15736 (started by 37535 in D:\code_java\forum\Forum_System\forum)
-2026-03-19T15:31:12.601+08:00 DEBUG 15736 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Running with Spring Boot v4.0.3, Spring v7.0.5
-2026-03-19T15:31:12.602+08:00  INFO 15736 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : No active profile set, falling back to 1 default profile: "default"
-2026-03-19T15:31:13.783+08:00  INFO 15736 --- [论坛项目] [main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
-2026-03-19T15:31:14.283+08:00  INFO 15736 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Started ArticleServiceImplTest in 1.954 seconds (process running for 2.74)
-2026-03-19T15:31:14.835+08:00  INFO 15736 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-03-19T15:31:14.980+08:00  INFO 15736 --- [论坛项目] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@10508ba6
-2026-03-19T15:31:14.981+08:00  INFO 15736 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-03-19T15:31:14.986+08:00 DEBUG 15736 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : ==>  Preparing: select id, name, articleCount, sort, state, deleteState, createTime, updateTime from t_board where id = ?
-2026-03-19T15:31:15.002+08:00 DEBUG 15736 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : ==> Parameters: 10(Long)
-2026-03-19T15:31:15.019+08:00 DEBUG 15736 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : <==      Total: 0
-2026-03-19T15:31:15.024+08:00  WARN 15736 --- [论坛项目] [main] c.x.f.services.impl.ArticleServiceImpl   : code = 1204, message = 板块不存在，boardId = 10
-2026-03-19T15:31:15.050+08:00  INFO 15736 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2026-03-19T15:31:15.059+08:00  INFO 15736 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-03-27T20:21:23.575+08:00  INFO 26580 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Starting ArticleServiceImplTest using Java 17.0.12 with PID 26580 (started by 37535 in D:\code_java\forum\Forum_System\forum)
+2026-03-27T20:21:23.580+08:00 DEBUG 26580 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Running with Spring Boot v4.0.3, Spring v7.0.5
+2026-03-27T20:21:23.582+08:00  INFO 26580 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : No active profile set, falling back to 1 default profile: "default"
+2026-03-27T20:21:25.209+08:00  INFO 26580 --- [论坛项目] [main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-03-27T20:21:25.770+08:00  INFO 26580 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Started ArticleServiceImplTest in 2.534 seconds (process running for 4.094)
+2026-03-27T20:21:26.481+08:00  INFO 26580 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-27T20:21:26.683+08:00  INFO 26580 --- [论坛项目] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@495f7ca4
+2026-03-27T20:21:26.686+08:00  INFO 26580 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-27T20:21:26.692+08:00 DEBUG 26580 --- [论坛项目] [main] c.x.forum.dao.ArticleMapper.selectById   : ==>  Preparing: SELECT u.id AS u_id, u.nickname AS u_nickname, u.avatarUrl AS u_avatarUrl, a.id, a.boardId, a.userId, a.title, a.visitCount, a.replyCount, a.likeCount, a.state, a.createTime, a.updateTime from t_article a, t_user u where a.userId = u.id and a.deleteState = 0 and a.id = ?
+2026-03-27T20:21:26.713+08:00 DEBUG 26580 --- [论坛项目] [main] c.x.forum.dao.ArticleMapper.selectById   : ==> Parameters: 2(Long)
+2026-03-27T20:21:26.736+08:00 DEBUG 26580 --- [论坛项目] [main] c.x.forum.dao.ArticleMapper.selectById   : <==      Total: 1
+2026-03-27T20:21:26.755+08:00 DEBUG 26580 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : ==>  Preparing: update t_article SET visitCount = ? where id = ?
+2026-03-27T20:21:26.756+08:00 DEBUG 26580 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : ==> Parameters: 1(Integer), 2(Long)
+2026-03-27T20:21:26.769+08:00 DEBUG 26580 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : <==    Updates: 1
+2026-03-27T20:21:26.810+08:00  INFO 26580 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-03-27T20:21:26.822+08:00  INFO 26580 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-03-27T20:22:16.159+08:00  INFO 25112 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Starting ArticleServiceImplTest using Java 17.0.12 with PID 25112 (started by 37535 in D:\code_java\forum\Forum_System\forum)
+2026-03-27T20:22:16.162+08:00 DEBUG 25112 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Running with Spring Boot v4.0.3, Spring v7.0.5
+2026-03-27T20:22:16.163+08:00  INFO 25112 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : No active profile set, falling back to 1 default profile: "default"
+2026-03-27T20:22:17.480+08:00  INFO 25112 --- [论坛项目] [main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-03-27T20:22:18.115+08:00  INFO 25112 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Started ArticleServiceImplTest in 2.248 seconds (process running for 3.174)
+2026-03-27T20:22:18.698+08:00  INFO 25112 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-27T20:22:18.860+08:00  INFO 25112 --- [论坛项目] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@10508ba6
+2026-03-27T20:22:18.862+08:00  INFO 25112 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-27T20:22:18.867+08:00 DEBUG 25112 --- [论坛项目] [main] c.x.forum.dao.ArticleMapper.selectById   : ==>  Preparing: SELECT u.id AS u_id, u.nickname AS u_nickname, u.avatarUrl AS u_avatarUrl, a.id, a.boardId, a.userId, a.title, a.visitCount, a.replyCount, a.likeCount, a.state, a.createTime, a.updateTime from t_article a, t_user u where a.userId = u.id and a.deleteState = 0 and a.id = ?
+2026-03-27T20:22:18.886+08:00 DEBUG 25112 --- [论坛项目] [main] c.x.forum.dao.ArticleMapper.selectById   : ==> Parameters: 2(Long)
+2026-03-27T20:22:18.904+08:00 DEBUG 25112 --- [论坛项目] [main] c.x.forum.dao.ArticleMapper.selectById   : <==      Total: 1
+2026-03-27T20:22:18.920+08:00 DEBUG 25112 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : ==>  Preparing: update t_article SET visitCount = ? where id = ?
+2026-03-27T20:22:18.922+08:00 DEBUG 25112 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : ==> Parameters: 2(Integer), 2(Long)
+2026-03-27T20:22:18.927+08:00 DEBUG 25112 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : <==    Updates: 1
+2026-03-27T20:22:18.967+08:00  INFO 25112 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-03-27T20:22:19.002+08:00  INFO 25112 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-03-27T20:22:39.838+08:00  INFO 17444 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Starting ArticleServiceImplTest using Java 17.0.12 with PID 17444 (started by 37535 in D:\code_java\forum\Forum_System\forum)
+2026-03-27T20:22:39.839+08:00 DEBUG 17444 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Running with Spring Boot v4.0.3, Spring v7.0.5
+2026-03-27T20:22:39.840+08:00  INFO 17444 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : No active profile set, falling back to 1 default profile: "default"
+2026-03-27T20:22:41.357+08:00  INFO 17444 --- [论坛项目] [main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-03-27T20:22:42.055+08:00  INFO 17444 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Started ArticleServiceImplTest in 2.513 seconds (process running for 3.411)
+2026-03-27T20:22:42.087+08:00  INFO 17444 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-27T20:22:42.311+08:00  INFO 17444 --- [论坛项目] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3c6fb501
+2026-03-27T20:22:42.313+08:00  INFO 17444 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-27T20:22:42.866+08:00 DEBUG 17444 --- [论坛项目] [main] c.x.forum.dao.ArticleMapper.selectById   : ==>  Preparing: SELECT u.id AS u_id, u.nickname AS u_nickname, u.avatarUrl AS u_avatarUrl, a.id, a.boardId, a.userId, a.title, a.visitCount, a.replyCount, a.likeCount, a.state, a.createTime, a.updateTime from t_article a, t_user u where a.userId = u.id and a.deleteState = 0 and a.id = ?
+2026-03-27T20:22:42.886+08:00 DEBUG 17444 --- [论坛项目] [main] c.x.forum.dao.ArticleMapper.selectById   : ==> Parameters: 2(Long)
+2026-03-27T20:22:42.903+08:00 DEBUG 17444 --- [论坛项目] [main] c.x.forum.dao.ArticleMapper.selectById   : <==      Total: 1
+2026-03-27T20:22:42.918+08:00 DEBUG 17444 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : ==>  Preparing: update t_article SET visitCount = ? where id = ?
+2026-03-27T20:22:42.918+08:00 DEBUG 17444 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : ==> Parameters: 3(Integer), 2(Long)
+2026-03-27T20:22:42.920+08:00 DEBUG 17444 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : <==    Updates: 1
+2026-03-27T20:22:42.962+08:00  INFO 17444 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-03-27T20:22:42.971+08:00  INFO 17444 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

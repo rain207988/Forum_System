@@ -5,6 +5,7 @@ import com.xzy.forum.services.IArticleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,5 +41,13 @@ class ArticleServiceImplTest {
         List<Article> articles = articleService.selectAllByBoardId(10l);
         System.out.println(articles);
 
+    }
+
+    @Transactional
+    @Test
+    void selectDetailById() {
+
+        //articleService.selectDetailById(2l);
+        System.out.println(articleService.selectDetailById(2l));
     }
 }

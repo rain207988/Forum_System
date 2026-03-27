@@ -5,7 +5,7 @@
     <resultMap   id="AllInfoResultMap" type="com.xzy.forum.model.Article"
     extends="ResultMapWithBLOBs">
         <association property="user" resultMap="com.xzy.forum.dao.UserMapper.BaseResultMap" columnPrefix="u_"/>
-
+        <association property="board" resultMap="com.xzy.forum.dao.BoardMapper.BaseResultMap" columnPrefix="b_"/>
     </resultMap>
 
     <!-- 联表查询文章列表，包含作者昵称和版块名称 -->
@@ -55,5 +55,30 @@
             and a.deleteState = 0
             and a.boardId = #{boardId}
         order by a.createTime desc
+    </select>
+
+
+    <select id="selectById" resultMap="AllInfoResultMap">
+            SELECT
+            u.id AS u_id,
+            u.nickname AS u_nickname,
+            u.avatarUrl AS u_avatarUrl,
+            a.id,
+            a.boardId,
+            a.userId,
+            a.title,
+            a.visitCount,
+            a.replyCount,
+            a.likeCount,
+            a.state,
+            a.createTime,
+            a.updateTime
+        from
+            t_article a, t_user u
+        where
+            a.userId = u.id
+            and a.deleteState = 0
+            and a.id = #{id}
+
     </select>
 </mapper>

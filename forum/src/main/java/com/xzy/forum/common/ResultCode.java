@@ -11,6 +11,8 @@ public enum ResultCode {
 
     FAILED_USER_EXISTS(1101, "用户已存在"),
     FAILED_USER_NOT_EXISTS(1102, "用户不存在"),
+    FAILED_ARTICLE_NOT_EXISTS(1301, "文章不存在"),
+
     FAILED_LOGIN(1103, "用户名或密码错误"),
     FAILED_USER_BANNED(1104, "您已被禁言, 请联系管理员, 并重新登录"),
     FAILED_USER_ARTICLE_COUNT(1202,"更新用户文章数量失败"),
