@@ -1,5 +1,6 @@
 package com.xzy.forum.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,10 +36,13 @@ public class Article {
 
     private String content;
 
-    //关联对象
-    User user;
+    @Schema(description = "是否是自己的文章", example = "true")
+    private boolean isOwn;
 
     //关联对象
-    Board board;
+    private User user;
+
+    //关联对象
+    private Board board;
 
 }

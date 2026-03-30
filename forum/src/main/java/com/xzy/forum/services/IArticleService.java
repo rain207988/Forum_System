@@ -22,4 +22,19 @@ public interface IArticleService {
 
 
         Article selectDetailById(@RequestParam("id") Long id);
+
+    /**
+     *
+     * @param id     帖子id
+     * @param title  帖子标题
+     * @param content
+     */
+     void modify(Long id , String title , String content);
+
+    /**
+     * 根据id查询文章
+     * @param id
+     * @return
+     */
+     Article selectById(Long id);
 }

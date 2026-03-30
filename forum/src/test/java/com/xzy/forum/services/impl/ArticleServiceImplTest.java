@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest
@@ -49,5 +50,12 @@ class ArticleServiceImplTest {
 
         //articleService.selectDetailById(2l);
         System.out.println(articleService.selectDetailById(2l));
+    }
+
+    @Test
+
+    void modify() {
+        articleService.modify(2l, "test title111", "test content11");
+        System.out.println(new Date().toString());
     }
 }

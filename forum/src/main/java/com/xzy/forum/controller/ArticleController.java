@@ -8,6 +8,7 @@ import com.xzy.forum.model.User;
 import com.xzy.forum.services.IArticleService;
 import com.xzy.forum.services.IBoardService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -117,11 +118,73 @@ private IArticleService iArticleService;
      * @return 文章详情对象，如果不存在则返回错误信息
      */
     @GetMapping("/details")
-    public AppResult<Article> getDetails(@RequestParam("id") @NonNull Long id) {
+    public AppResult<Article> getDetails(HttpServletRequest request, @RequestParam("id") @NonNull Long id) {
+
+        HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("user");
+
+
 
         Article article = iArticleService.selectDetailById(id);
         //service层已经校验了文章是否存在，所以这里不需要再校验了，直接返回结果即可
+
+        if(user.getId() == article.getUserId()){
+            // 是自己的文章，设置 own 属性为 true，表示可以进行编辑和删除操作
+            article.setOwn(true);
+        } else {
+            // 不是自己的文章，设置 own 属性为 false，表示不能进行编辑和删除操作
+            article.setOwn(false);
+        }
         return AppResult.success(article);
     }
 
+    /**
+     * 修改文章
+     * @param request 获取用户信息 以及登录状态
+     * @param id
+     * @param title
+     * @param content
+     * @return
+     */
+    @PostMapping("/modify")
+    public  AppResult modify(HttpServletRequest request,
+                             @RequestParam("id") Long id ,
+                             @RequestParam("title")  String title ,
+                             @RequestParam("content") String content){
+
+        HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("user");
+
+        //判断用户是否被禁言
+        if(user.getState() == 1){
+            return AppResult.failed(ResultCode.FAILED_USER_BANNED.toString());
+
+        }
+
+        Article article = iArticleService.selectById(id);
+        //检验帖子是否存在
+        if(article == null){
+            return AppResult.failed(ResultCode.FAILED_ARTICLE_NOT_EXISTS);
+        }
+
+        //检验是否是自己的帖子
+        if(article.getUserId() != user.getId()){
+            return AppResult.failed(ResultCode.FAILED_ARTICLE_NOT_OWN);
+        }
+
+        //检测帖子是否被删除,或者截止了，即任何人修改该帖子
+        if(article.getState() == 1){
+            return AppResult.failed(ResultCode.FAILED_FORBIDDEN);
+        }
+
+
+        //调用service层的修改方法
+        iArticleService.modify(id, title, content);
+
+
+        log.info("帖子更新成功，id = {}", id);
+
+        //返回正确的结果
+        return AppResult.success();
+    }
 }

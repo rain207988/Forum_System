@@ -100,6 +100,7 @@ public class UserController {
                             @Parameter(description = "用户名", required = true) @RequestParam(value = "username") String username,
                             @Parameter(description = "密码", required = true) @RequestParam(value = "password") String password) {
         // ⽤⼾登录
+        // 调用Service层的登录方法，返回User对象，校验都在service层完成
         User user = userService.login(username, password);
         // 获取Session
         HttpSession session = request.getSession(true);
