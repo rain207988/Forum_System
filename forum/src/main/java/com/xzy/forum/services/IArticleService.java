@@ -37,4 +37,9 @@ public interface IArticleService {
      * @return
      */
      Article selectById(Long id);
+
+
+
+
+     void thumbsUpById(Long id);
 }

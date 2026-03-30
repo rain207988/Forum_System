@@ -172,4 +172,14 @@ public class ArticleServiceImpl implements IArticleService {
         Article article = articleMapper.selectByPrimaryKey(id);
         return article;
     }
+
+    @Override
+    public void thumbsUpById(Long id) {
+
+        if(id == null || id <= 0){
+            log.warn(ResultCode.FAILED_PARAMS_VALIDATE.toString());
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_PARAMS_VALIDATE));
+        }
+
+    }
 }
