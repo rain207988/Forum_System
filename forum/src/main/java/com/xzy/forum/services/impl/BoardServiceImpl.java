@@ -91,4 +91,41 @@ public class BoardServiceImpl implements IBoardService {
         Board board = boardMapper.selectByPrimaryKey(id);
         return board;
     }
+
+    @Override
+    public void subOneArticleCountById(Long id) {
+        //非空校验
+        if(id == null || id <= 0){
+
+            log.warn(ResultCode.FAILED_BOARD_ARTICLE_COUNT.toString());
+
+            //抛出异常
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_BOARD_ARTICLE_COUNT));
+        }
+
+        //查询板块详情
+        Board board = boardMapper.selectByPrimaryKey(id);
+        if(board  == null){
+            log.warn(ResultCode.FAILED_BOARD_NOT_EXISTS.toString()+",boardId = " + id);
+            throw new ApplicationException(AppResult.failed(ResultCode.ERROR_IS_NULL));
+        }
+
+        //构造更新对象
+        Board updateBoard = new Board();
+        updateBoard.setId(id);
+        updateBoard.setArticleCount(board.getArticleCount()-1);
+        //判断减少1之后是否小于0
+        if(board.getArticleCount() <= 0){
+            //设置为0，保证正确性
+            updateBoard.setArticleCount(0);
+        }
+
+        Integer row = boardMapper.updateByPrimaryKeySelective(updateBoard);
+        if(row != 1){
+            log.warn(ResultCode.FAILED.toString() + "受影响的行数不等于1");
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED));
+        }
+
+
+    }
 }

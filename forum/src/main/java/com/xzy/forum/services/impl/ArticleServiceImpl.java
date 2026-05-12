@@ -181,5 +181,34 @@ public class ArticleServiceImpl implements IArticleService {
             throw new ApplicationException(AppResult.failed(ResultCode.FAILED_PARAMS_VALIDATE));
         }
 
+
+        Article article = articleMapper.selectByPrimaryKey(id);
+        //帖子状态检测
+        //被删除了，也表示不存在
+        if(article == null || article.getDeleteState() ==1){
+            log.warn(ResultCode.FAILED_ARTICLE_NOT_EXISTS.toString() + "，id = " + id);
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_ARTICLE_NOT_EXISTS));
+        }
+
+        //帖子状态检测
+        if(article.getState() ==1 ){
+            log.warn(ResultCode.FAILED_ARTICLE_NOT_EXISTS.toString() + "，id = " + id);
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_ARTICLE_NOT_EXISTS));
+        }
+
+        Article updateArticle = new Article();
+        updateArticle.setId(article.getId());
+        updateArticle.setLikeCount(article.getLikeCount() + 1);
+        int row = articleMapper.updateByPrimaryKeySelective(updateArticle);
+        if(row != 1){
+            log.warn(ResultCode.ERROR_SERVICES.toString());
+            throw new ApplicationException(AppResult.failed(ResultCode.ERROR_SERVICES));
+        }
+
+    }
+
+    @Override
+    public void deleteById(Long id) {
+
     }
 }

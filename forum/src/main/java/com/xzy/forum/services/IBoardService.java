@@ -18,4 +18,11 @@ public interface IBoardService {
     void addOneArticleCount(Long boardId);
 
     Board selectById(Long id);
+
+    /**
+     *
+     * 板块文章减1
+     * @param id
+     */
+    void subOneArticleCountById(Long id);
 }

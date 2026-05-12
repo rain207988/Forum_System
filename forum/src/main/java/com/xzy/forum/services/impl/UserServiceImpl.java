@@ -104,8 +104,15 @@ public class UserServiceImpl implements IUserService {
             throw new ApplicationException(AppResult.failed(ResultCode.FAILED_PARAMS_VALIDATE));
         }
 
+        User user = userMapper.selectByPrimaryKey(id);
+        if (user == null) {
+            log.warn(ResultCode.ERROR_IS_NULL.toString());
+            throw new ApplicationException(AppResult.failed(ResultCode.ERROR_IS_NULL));
+        }
 
         Integer articleCount = userMapper.selectByPrimaryKey(id).getArticleCount();
+
+
         User updateUser = new User();
         updateUser.setId(id);//id一定要设置，否则不知道更新哪条记录
         updateUser.setArticleCount(articleCount+1);
@@ -116,6 +123,33 @@ public class UserServiceImpl implements IUserService {
             log.warn(ResultCode.FAILED.toString() + "收影响的行数不是1");
 
             throw new ApplicationException(AppResult.failed(ResultCode.FAILED));
+        }
+    }
+
+    @Override
+    public void subOneArticleCountById(Long id) {
+        if (id == null || id <= 0) {
+            log.warn(ResultCode.FAILED_PARAMS_VALIDATE.toString());
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_PARAMS_VALIDATE));
+        }
+
+        User user = userMapper.selectByPrimaryKey(id);
+        if (user == null) {
+            log.warn(ResultCode.ERROR_IS_NULL.toString());
+            throw new ApplicationException(AppResult.failed(ResultCode.ERROR_IS_NULL));
+        }
+
+
+        User updateUser = new User();
+        updateUser.setId(id);
+        updateUser.setArticleCount(user.getArticleCount()-1);
+        if(updateUser.getArticleCount()!=0){
+            updateUser.setArticleCount(0);
+        }
+        Integer row = userMapper.updateByPrimaryKeySelective(updateUser);
+
+        if(row != 1){
+        log.warn(ResultCode.FAILED.toString()+"受影响的行数不等于1");
         }
     }
 }

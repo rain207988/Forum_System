@@ -42,4 +42,10 @@ public interface IArticleService {
 
 
      void thumbsUpById(Long id);
+
+    /**
+     * 根据id删除帖子
+     * @param id
+     */
+     void deleteById(Long id);
 }

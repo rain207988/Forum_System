@@ -21,5 +21,9 @@ public interface IUserService {
 
     void addOneArticleCountById(Long id);
 
-
+    /**
+     * 用户发帖数减少1
+     * @param id
+     */
+    void subOneArticleCountById(Long id);
 }

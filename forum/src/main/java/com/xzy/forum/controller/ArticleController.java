@@ -187,4 +187,30 @@ private IArticleService iArticleService;
         //返回正确的结果
         return AppResult.success();
     }
+
+
+    /**
+     * 点赞
+     * @param request
+     * @param id
+     * @return
+     */
+
+    @PostMapping("/thumbsUp")
+    public AppResult thumbsUp (HttpServletRequest request, @RequestParam("id") @NonNull Long id){
+
+        HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("user");
+
+
+        //检测用户是否被禁言
+        if(user.getState() == 1){
+            log.warn(ResultCode.FAILED_USER_BANNED.toString());
+            return AppResult.failed(ResultCode.FAILED_USER_BANNED);
+        }
+
+        iArticleService.thumbsUpById(id);
+
+        return AppResult.success();
+    }
 }
