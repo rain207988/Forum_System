@@ -123,4 +123,17 @@
       updateTime = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <update id="increaseArticleCountById" parameterType="java.lang.Long">
+    update t_board
+    set articleCount = articleCount + 1
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="decreaseArticleCountById" parameterType="java.lang.Long">
+    update t_board
+    set articleCount = case
+      when articleCount &gt; 0 then articleCount - 1
+      else 0
+    end
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 </mapper>

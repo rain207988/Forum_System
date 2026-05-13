@@ -213,4 +213,26 @@ private IArticleService iArticleService;
 
         return AppResult.success();
     }
+
+    @PostMapping("/delete")
+    public AppResult deleteById(HttpServletRequest request, @RequestParam("id") Long id){
+
+        HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("user");
+
+        Article article = iArticleService.selectById(id);
+
+        if(user.getState() == 1 ){
+            return AppResult.failed(ResultCode.FAILED_USER_BANNED.toString());
+        }
+
+        //检验当前登录是否是作者
+        if( user.getId() != article.getUserId()) {
+            return AppResult.failed(ResultCode.FAILED_FORBIDDEN);
+        }
+        iArticleService.deleteById(id);
+
+        return  AppResult.success();
+
+    }
 }

@@ -17,4 +17,8 @@ public interface UserMapper {
     int updateByPrimaryKey(User row);
 
     User selectByUserName(String username);
+
+    int increaseArticleCountById(Long id);
+
+    int decreaseArticleCountById(Long id);
 }

@@ -58,4 +58,9 @@ class ArticleServiceImplTest {
         articleService.modify(2l, "test title111", "test content11");
         System.out.println(new Date().toString());
     }
+
+    @Test
+    void deleteById() {
+        articleService.deleteById(2l);
+    }
 }

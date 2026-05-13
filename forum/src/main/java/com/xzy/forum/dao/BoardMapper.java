@@ -23,4 +23,8 @@ public interface BoardMapper {
     List<Board>selectAllNormal();
 
     List<Board> selectByNum(Integer num);
+
+    int increaseArticleCountById(Long id);
+
+    int decreaseArticleCountById(Long id);
 }

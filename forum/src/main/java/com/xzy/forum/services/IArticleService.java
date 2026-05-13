@@ -47,5 +47,6 @@ public interface IArticleService {
      * 根据id删除帖子
      * @param id
      */
+    @Transactional //事务管理，其中涉及多个更新操作
      void deleteById(Long id);
 }

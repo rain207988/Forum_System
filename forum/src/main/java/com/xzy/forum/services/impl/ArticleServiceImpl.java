@@ -11,9 +11,12 @@ import com.xzy.forum.model.Board;
 import com.xzy.forum.services.IArticleService;
 import com.xzy.forum.services.IBoardService;
 import com.xzy.forum.services.IUserService;
+import com.xzy.forum.utils.ServiceValidationUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Date;
 import java.util.List;
@@ -208,7 +211,37 @@ public class ArticleServiceImpl implements IArticleService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    @Transactional
+    public void deleteById(@Validated Long id) {
+        ServiceValidationUtils.requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "articleId");
 
+        Article article = articleMapper.selectByPrimaryKey(id);
+        article = ServiceValidationUtils.requireNonNull(article, ResultCode.FAILED_ARTICLE_NOT_EXISTS, "articleId", id);
+
+        if (article.getDeleteState() == 1) {
+            log.warn("{}，articleId={}", ResultCode.FAILED_ARTICLE_NOT_EXISTS, id);
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_ARTICLE_NOT_EXISTS));
+        }
+
+        Article updateArticle = new Article();
+        initArticle(updateArticle,id);
+
+
+        int row = articleMapper.updateByPrimaryKeySelective(updateArticle);
+        ServiceValidationUtils.requireAffectedOneRow(row, ResultCode.ERROR_SERVICES, "删除帖子失败", id);
+
+        //更新用户记录中的帖子数量
+        iUserService.subOneArticleCountById(article.getUserId());
+        //更新板块中的帖子数量
+        iBoardService.subOneArticleCountById(article.getBoardId());
+
+        log.info("帖子删除成功，articleId={}", id);
+    }
+
+    //提炼初始化
+    private void initArticle(Article updateArticle,Long id) {
+        updateArticle.setId(id);
+        updateArticle.setDeleteState((byte) 1);
+        updateArticle.setUpdateTime(new Date());
     }
 }
