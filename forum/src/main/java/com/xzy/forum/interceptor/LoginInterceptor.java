@@ -28,6 +28,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         // 用户未登录，重定向到登录页面
         deFaultURL = "/" + deFaultURL;
         response.sendRedirect(deFaultURL);
+
         //终端流程
         return false;
 

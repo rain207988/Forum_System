@@ -49,4 +49,7 @@ public interface IArticleService {
      */
     @Transactional //事务管理，其中涉及多个更新操作
      void deleteById(Long id);
+
+
+    void addOneReplyCountById(Long id);
 }

@@ -17,9 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 import java.util.List;
+
+import static com.xzy.forum.utils.ServiceValidationUtils.requireAffectedOneRow;
+import static com.xzy.forum.utils.ServiceValidationUtils.requirePositiveId;
 
 @Slf4j
 @Service
@@ -38,7 +42,8 @@ public class ArticleServiceImpl implements IArticleService {
     private IBoardService iBoardService;
     @Autowired
     private BoardMapper boardMapper;
-
+    @Autowired
+    private IArticleService iArticleService;
 
 
     @Override
@@ -213,7 +218,7 @@ public class ArticleServiceImpl implements IArticleService {
     @Override
     @Transactional
     public void deleteById(@Validated Long id) {
-        ServiceValidationUtils.requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "articleId");
+        requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "articleId");
 
         Article article = articleMapper.selectByPrimaryKey(id);
         article = ServiceValidationUtils.requireNonNull(article, ResultCode.FAILED_ARTICLE_NOT_EXISTS, "articleId", id);
@@ -228,7 +233,7 @@ public class ArticleServiceImpl implements IArticleService {
 
 
         int row = articleMapper.updateByPrimaryKeySelective(updateArticle);
-        ServiceValidationUtils.requireAffectedOneRow(row, ResultCode.ERROR_SERVICES, "删除帖子失败", id);
+        requireAffectedOneRow(row, ResultCode.ERROR_SERVICES, "删除帖子失败", id);
 
         //更新用户记录中的帖子数量
         iUserService.subOneArticleCountById(article.getUserId());
@@ -236,6 +241,34 @@ public class ArticleServiceImpl implements IArticleService {
         iBoardService.subOneArticleCountById(article.getBoardId());
 
         log.info("帖子删除成功，articleId={}", id);
+    }
+
+    @Override
+    public void addOneReplyCountById(@RequestParam("id") Long id) {
+        //做参数校验
+        requirePositiveId(id,ResultCode.ERROR_IS_NULL,"回复id参数校验失败");
+
+        Article article = articleMapper.selectByPrimaryKey(id);
+
+        if(article == null ||  article.getDeleteState() ==1){
+            log.warn(ResultCode.FAILED_ARTICLE_NOT_EXISTS.toString());
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_ARTICLE_NOT_EXISTS));
+        }
+
+        //校验帖子是否封帖子
+        if(article.getState() ==1 ){
+            log.warn(ResultCode.FAILED_ARTICLE_BANNED.toString());
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_ARTICLE_NOT_EXISTS));
+        }
+
+        Article updateArticle = new Article();
+        updateArticle.setId(article.getId());
+        updateArticle.setLikeCount(article.getReplyCount() + 1);
+        updateArticle.setUpdateTime(new Date());
+
+        int row = articleMapper.updateByPrimaryKeySelective(updateArticle);
+        requireAffectedOneRow(row,ResultCode.FAILED,"帖子回复数更新失败",article.getId());
+
     }
 
     //提炼初始化

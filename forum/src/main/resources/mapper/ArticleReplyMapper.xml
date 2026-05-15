@@ -24,6 +24,7 @@
     from t_article_reply
     where id = #{id,jdbcType=BIGINT}
   </select>
+    <select id="selectByArticleId" resultMap=""
   <insert id="insert" parameterType="com.xzy.forum.model.ArticleReply" useGeneratedKeys="true" keyProperty="id">
     insert into t_article_reply (id, articleId, postUserId, 
       replyId, replyUserId, content, 

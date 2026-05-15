@@ -6,27 +6,34 @@ import java.util.Date;
 
 @Data
 public class ArticleReply {
-    private Long id;
+        private Long id;
 
-    private Long articleId;
+        //帖子id，关联Article
+        private Long articleId;
 
-    private Long postUserId;
+        //回复的用户编号
+        private Long postUserId;
 
-    private Long replyId;
+        //忽略，需求楼中楼功能
+        private Long replyId;
 
-    private Long replyUserId;
+        private Long replyUserId;
 
-    private String content;
+        //回复正文
+        private String content;
 
-    private Integer likeCount;
+        //忽略，需求中点赞功能
+        private Integer likeCount;
 
-    private Byte state;
+        //状态 0 正常， 1 禁用
+        private Byte state;
 
-    private Byte deleteState;
+        //状态 0 正常， 1 禁用
+        private Byte deleteState;
 
-    private Date createTime;
+        private Date createTime;
 
-    private Date updateTime;
+        private Date updateTime;
 
 
 }
