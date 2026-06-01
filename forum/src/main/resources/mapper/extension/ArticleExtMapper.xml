@@ -1,84 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xzy.forum.dao.ArticleMapper">
-<!--自定义结果映射集-->
-    <resultMap   id="AllInfoResultMap" type="com.xzy.forum.model.Article"
-    extends="ResultMapWithBLOBs">
+    <resultMap id="AllInfoResultMap" type="com.xzy.forum.model.Article"
+               extends="ResultMapWithBLOBs">
         <association property="user" resultMap="com.xzy.forum.dao.UserMapper.BaseResultMap" columnPrefix="u_"/>
         <association property="board" resultMap="com.xzy.forum.dao.BoardMapper.BaseResultMap" columnPrefix="b_"/>
     </resultMap>
 
-    <!-- 联表查询文章列表，包含作者昵称和版块名称 -->
-    <select id="selectAll" resultMap="AllInfoResultMap">
-        SELECT
-             u.id AS u_id,
-             u.nickname AS u_nickname,
-             u.avatarUrl AS u_avatarUrl,
-            a.id,
-             a.boardId,
-             a.userId,
-             a.title,
-             a.visitCount,
-             a.replyCount,
-             a.likeCount,
-             a.state,
-             a.createTime,
-             a.updateTime
-             from
-             t_article a, t_user u
-             where
-             a.userId = u.id
-             and a.deleteState = 0
-             order by a.createTime desc
-    </select>
+    <sql id="ArticleJoinColumns">
+        u.id AS u_id,
+        u.nickname AS u_nickname,
+        u.avatarUrl AS u_avatarUrl,
+        b.id AS b_id,
+        b.name AS b_name,
+        b.articleCount AS b_articleCount,
+        b.sort AS b_sort,
+        b.state AS b_state,
+        b.deleteState AS b_deleteState,
+        b.createTime AS b_createTime,
+        b.updateTime AS b_updateTime,
+        a.id,
+        a.boardId,
+        a.userId,
+        a.title,
+        a.visitCount,
+        a.replyCount,
+        a.likeCount,
+        a.state,
+        a.deleteState,
+        a.createTime,
+        a.updateTime,
+        a.content
+    </sql>
 
-    <!-- 联表查询文章列表，包含作者昵称和版块名称 -->
-    <select id="selectAllByBoardId" resultMap="AllInfoResultMap" parameterType="java.lang.Long">
-        SELECT
-            u.id AS u_id,
-            u.nickname AS u_nickname,
-            u.avatarUrl AS u_avatarUrl,
-            a.id,
-            a.boardId,
-            a.userId,
-            a.title,
-            a.visitCount,
-            a.replyCount,
-            a.likeCount,
-            a.state,
-            a.createTime,
-            a.updateTime
-        from
-            t_article a, t_user u
-        where
-            a.userId = u.id
-            and a.deleteState = 0
-            and a.boardId = #{boardId}
+    <sql id="ArticleKeywordCondition">
+        <if test="keyword != null and keyword != ''">
+            and (
+                a.title like concat('%', #{keyword}, '%')
+                or a.content like concat('%', #{keyword}, '%')
+                or u.nickname like concat('%', #{keyword}, '%')
+            )
+        </if>
+    </sql>
+
+    <select id="selectAll" resultMap="AllInfoResultMap">
+        select
+        <include refid="ArticleJoinColumns"/>
+        from t_article a
+        join t_user u on a.userId = u.id
+        join t_board b on a.boardId = b.id
+        where a.deleteState = 0
+          and b.deleteState = 0
+        <include refid="ArticleKeywordCondition"/>
         order by a.createTime desc
     </select>
 
+    <select id="selectAllByBoardId" resultMap="AllInfoResultMap">
+        select
+        <include refid="ArticleJoinColumns"/>
+        from t_article a
+        join t_user u on a.userId = u.id
+        join t_board b on a.boardId = b.id
+        where a.deleteState = 0
+          and b.deleteState = 0
+          and a.boardId = #{boardId}
+        <include refid="ArticleKeywordCondition"/>
+        order by a.createTime desc
+    </select>
 
     <select id="selectById" resultMap="AllInfoResultMap">
-            SELECT
-            u.id AS u_id,
-            u.nickname AS u_nickname,
-            u.avatarUrl AS u_avatarUrl,
-            a.id,
-            a.boardId,
-            a.userId,
-            a.title,
-            a.visitCount,
-            a.replyCount,
-            a.likeCount,
-            a.state,
-            a.createTime,
-            a.updateTime
-        from
-            t_article a, t_user u
-        where
-            a.userId = u.id
-            and a.deleteState = 0
-            and a.id = #{id}
+        select
+        <include refid="ArticleJoinColumns"/>
+        from t_article a
+        join t_user u on a.userId = u.id
+        join t_board b on a.boardId = b.id
+        where a.deleteState = 0
+          and a.id = #{id}
+    </select>
 
+    <select id="selectAllByUserId" parameterType="java.lang.Long" resultMap="AllInfoResultMap">
+        select
+        <include refid="ArticleJoinColumns"/>
+        from t_article a
+        join t_user u on a.userId = u.id
+        join t_board b on a.boardId = b.id
+        where a.deleteState = 0
+          and a.userId = #{userId}
+        order by a.createTime desc
     </select>
 </mapper>

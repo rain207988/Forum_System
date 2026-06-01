@@ -38,8 +38,7 @@ public class AppResult<T> {
     }
 
     public static AppResult failed(ResultCode failed, String message) {
-        return new AppResult(ResultCode.FAILED.getCode(),
-                ResultCode.FAILED.getMessage());
+        return new AppResult(failed.getCode(), message);
     }
 
     public static <T> AppResult<T> failed(String message) {

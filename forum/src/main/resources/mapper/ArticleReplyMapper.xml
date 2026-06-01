@@ -14,27 +14,30 @@
     <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
     <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
+
   <sql id="Base_Column_List">
-    id, articleId, postUserId, replyId, replyUserId, content, likeCount, state, deleteState, 
+    id, articleId, postUserId, replyId, replyUserId, content, likeCount, state, deleteState,
     createTime, updateTime
   </sql>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_article_reply
     where id = #{id,jdbcType=BIGINT}
   </select>
-    <select id="selectByArticleId" resultMap=""
+
   <insert id="insert" parameterType="com.xzy.forum.model.ArticleReply" useGeneratedKeys="true" keyProperty="id">
-    insert into t_article_reply (id, articleId, postUserId, 
-      replyId, replyUserId, content, 
-      likeCount, state, deleteState, 
+    insert into t_article_reply (id, articleId, postUserId,
+      replyId, replyUserId, content,
+      likeCount, state, deleteState,
       createTime, updateTime)
-    values (#{id,jdbcType=BIGINT}, #{articleId,jdbcType=BIGINT}, #{postUserId,jdbcType=BIGINT}, 
-      #{replyId,jdbcType=BIGINT}, #{replyUserId,jdbcType=BIGINT}, #{content,jdbcType=VARCHAR}, 
-      #{likeCount,jdbcType=INTEGER}, #{state,jdbcType=TINYINT}, #{deleteState,jdbcType=TINYINT}, 
+    values (#{id,jdbcType=BIGINT}, #{articleId,jdbcType=BIGINT}, #{postUserId,jdbcType=BIGINT},
+      #{replyId,jdbcType=BIGINT}, #{replyUserId,jdbcType=BIGINT}, #{content,jdbcType=VARCHAR},
+      #{likeCount,jdbcType=INTEGER}, #{state,jdbcType=TINYINT}, #{deleteState,jdbcType=TINYINT},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
+
   <insert id="insertSelective" parameterType="com.xzy.forum.model.ArticleReply" useGeneratedKeys="true" keyProperty="id">
     insert into t_article_reply
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -108,6 +111,7 @@
       </if>
     </trim>
   </insert>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.xzy.forum.model.ArticleReply">
     update t_article_reply
     <set>
@@ -144,6 +148,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+
   <update id="updateByPrimaryKey" parameterType="com.xzy.forum.model.ArticleReply">
     update t_article_reply
     set articleId = #{articleId,jdbcType=BIGINT},

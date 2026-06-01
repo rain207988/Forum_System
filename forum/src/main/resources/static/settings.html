@@ -39,9 +39,22 @@
               </div>
 
               <div class="col-auto"><a href="javascript:void(0);" class="btn" onclick="openFileDialog()">
-                  修改头像
+                  本地预览
                 </a>
 
+              </div>
+            </div>
+            <div class="text-muted small mt-2">本地图片仅用于预览，正式保存请填写可访问的头像图片地址。</div>
+            <h3 class="card-title mt-4">头像地址</h3>
+            <div class="row">
+              <div class="col-9">
+                <input id="setting_input_avatarUrl" type="text" class="form-control" placeholder="https://example.com/avatar.png">
+                <div class="invalid-feedback">头像地址不能为空</div>
+              </div>
+              <div class="col-3">
+                <a id="setting_submit_avatarUrl" href="javascript:void(0)" class="btn">
+                  保 存
+                </a>
               </div>
             </div>
             <h3 class="card-title mt-4">昵称</h3>
@@ -233,6 +246,7 @@
     $('#settings_nickname').html(user.nickname);
     // 头像
     $('#settings_avatar').css('background-image', 'url(' + user.avatarUrl + ')');
+    $('#setting_input_avatarUrl').val(user.avatarUrl);
     // 昵称
     $('#setting_input_nickname').val(user.nickname);
     // 邮箱
@@ -240,7 +254,7 @@
     // 电话
     $('#setting_input_phoneNum').val(user.phoneNum);
     // 个人简历
-    $('#settings_textarea_remark').html(user.remark);
+    $('#settings_textarea_remark').val(user.remark);
   }
 
   // ================= 封装ajax请求 =================
@@ -320,6 +334,45 @@
     // 触发选择文件按钮的点击事件
     $('#settings_input_chooiceAvatar').click();
   }
+
+  $('#settings_input_chooiceAvatar').change(function() {
+    const file = this.files && this.files[0];
+    if (!file) {
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      $.toast({
+        heading: '提示',
+        text: '请选择图片文件',
+        icon: 'warning'
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const avatarDataUrl = event.target.result;
+      $('#settings_avatar').css('background-image', 'url(' + avatarDataUrl + ')');
+      $.toast({
+        heading: '提示',
+        text: '已本地预览，如需持久保存请填写头像地址后点击保存。',
+        icon: 'info'
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+
+  $('#setting_submit_avatarUrl').click(function(){
+    let avatarUrlEl = $('#setting_input_avatarUrl');
+    if(!avatarUrlEl.val()) {
+      avatarUrlEl.focus();
+      return false;
+    }
+    changeUserInfo({
+      avatarUrl : avatarUrlEl.val()
+    });
+    $('#settings_avatar').css('background-image', 'url(' + avatarUrlEl.val() + ')');
+  });
 
   // ================= 修改用户昵称 =================
   $('#setting_submit_nickname').click(function(){

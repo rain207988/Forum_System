@@ -19,6 +19,10 @@ public interface IUserService {
 
     User selectById(Long Id);
 
+    User updateProfile(Long id, User updateUser);
+
+    void changePassword(Long id, String oldPassword, String newPassword, String passwordRepeat);
+
     void addOneArticleCountById(Long id);
 
     /**

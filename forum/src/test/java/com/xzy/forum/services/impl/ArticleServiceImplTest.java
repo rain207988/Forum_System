@@ -5,62 +5,47 @@ import com.xzy.forum.services.IArticleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 class ArticleServiceImplTest {
 
     @Autowired
     private IArticleService articleService;
 
-
     @Test
-    void create() {
-
-        Article article = new Article();
-        article.setUserId(1l);
-        article.setBoardId(1l);
-        article.setTitle("test title");
-        article.setContent("test content");
-
-        articleService.create(article);
+    void shouldQueryAllArticles() {
+        List<Article> articles = articleService.selectAll(null);
+        assertThat(articles).hasSizeGreaterThanOrEqualTo(2);
+        assertThat(articles.get(0).getUser()).isNotNull();
+        assertThat(articles.get(0).getBoard()).isNotNull();
     }
 
     @Test
-    void selectAll() {
-        List<Article> articles = articleService.selectAll();
-        System.out.println(articles);
-
+    void shouldQueryArticlesByBoardId() {
+        List<Article> articles = articleService.selectAllByBoardId(1L, null);
+        assertThat(articles).isNotEmpty();
+        assertThat(articles).allMatch(article -> article.getBoardId().equals(1L));
     }
 
     @Test
-    void selectAllByBoardId() {
-
-        List<Article> articles = articleService.selectAllByBoardId(10l);
-        System.out.println(articles);
-
-    }
-
-    @Transactional
-    @Test
-    void selectDetailById() {
-
-        //articleService.selectDetailById(2l);
-        System.out.println(articleService.selectDetailById(2l));
+    void shouldQueryArticlesByUserId() {
+        List<Article> articles = articleService.selectAllByUserId(1L);
+        assertThat(articles).isNotEmpty();
+        assertThat(articles).allMatch(article -> article.getUserId().equals(1L));
     }
 
     @Test
-
-    void modify() {
-        articleService.modify(2l, "test title111", "test content11");
-        System.out.println(new Date().toString());
-    }
-
-    @Test
-    void deleteById() {
-        articleService.deleteById(2l);
+    void shouldIncreaseVisitCountWhenLoadingDetails() {
+        Article article = articleService.selectDetailById(1L);
+        assertThat(article).isNotNull();
+        assertThat(article.getVisitCount()).isEqualTo(13);
     }
 }

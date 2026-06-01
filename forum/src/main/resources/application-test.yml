@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:forum_test;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  sql:
+    init:
+      mode: always
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: NON_NULL
+  cache:
+    type: simple
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+
+forum:
+  login:
+    url: sign-in.html
+  index:
+    board_num: 9
+
+logging:
+  level:
+    root: WARN
+    com.xzy.forum: INFO

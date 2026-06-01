@@ -11,9 +11,13 @@ public enum ResultCode {
 
     FAILED_USER_EXISTS(1101, "用户已存在"),
     FAILED_USER_NOT_EXISTS(1102, "用户不存在"),
+    FAILED_USER_PASSWORD_INVALID(1106, "原密码不正确"),
+    FAILED_USER_MESSAGE_SELF(1107, "不能给自己发送私信"),
     FAILED_ARTICLE_NOT_EXISTS(1301, "文章不存在"),
     FAILED_ARTICLE_NOT_OWN(1302,"非本人文章"),
     FAILED_ARTICLE_BANNED(1303,"帖子已封帖"),
+    FAILED_MESSAGE_NOT_EXISTS(1401, "站内信不存在"),
+    FAILED_MESSAGE_FORBIDDEN(1402, "无权操作该站内信"),
 
 
     FAILED_LOGIN(1103, "用户名或密码错误"),

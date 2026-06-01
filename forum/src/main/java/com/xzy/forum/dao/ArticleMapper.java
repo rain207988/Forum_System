@@ -2,6 +2,7 @@ package com.xzy.forum.dao;
 
 import com.xzy.forum.model.Article;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface ArticleMapper {
      * @return
      */
 
-    List<Article> selectAll();
+    List<Article> selectAll(@Param("keyword") String keyword);
 
     /**
      * 根据帖子id查询帖子详情
@@ -39,5 +40,7 @@ public interface ArticleMapper {
      * @param boardId
      * @return
      */
-    List<Article> selectAllByBoardId(Long boardId);
+    List<Article> selectAllByBoardId(@Param("boardId") Long boardId, @Param("keyword") String keyword);
+
+    List<Article> selectAllByUserId(Long userId);
 }

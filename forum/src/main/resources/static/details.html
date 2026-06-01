@@ -453,6 +453,9 @@
         replyUserProfileBtn.click(function () {
           // 设置要查看用户的Id
           profileUserId = articleReply.user.id;
+          if (profileUserId == currentUserId) {
+            profileUserId = undefined;
+          }
           $('#bit-forum-content').load('profile.html');
         });
         // 添加到回复区
@@ -553,6 +556,7 @@
             $('#details_article_replyCount').html(currentArticle.replyCount);
             // 重构回复列表
             loadArticleDetailsReply();
+            editor.clear();
           } else {
             // 失败提示
             $.toast({
@@ -566,7 +570,7 @@
           // 提示信息
           $.toast({
               heading: '警告',
-              text: respData.message,
+              text: '访问出现问题，请与管理员联系.',
               icon: 'error'  // 红色
           });
         }
@@ -592,7 +596,7 @@
                 icon: 'success'
             });
             // 跳转到首页帖子列表
-            changeNavActive($('#nav-link-title'));
+            changeNavActive($('#nav_board_index'));
           } else {
             // 提示信息
             $.toast({

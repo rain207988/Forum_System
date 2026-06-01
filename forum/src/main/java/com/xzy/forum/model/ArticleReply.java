@@ -1,5 +1,6 @@
 package com.xzy.forum.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.util.Date;
@@ -29,11 +30,13 @@ public class ArticleReply {
         private Byte state;
 
         //状态 0 正常， 1 禁用
+        @JsonIgnore
         private Byte deleteState;
 
         private Date createTime;
 
         private Date updateTime;
 
+        private User user;
 
 }

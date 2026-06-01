@@ -2,7 +2,6 @@ package com.xzy.forum.services;
 
 import com.xzy.forum.model.Article;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -16,12 +15,14 @@ public interface IArticleService {
         void create(Article article);
 
 
-        List<Article> selectAll();
+        List<Article> selectAll(String keyword);
 
-        List<Article> selectAllByBoardId(Long boardId);
+        List<Article> selectAllByBoardId(Long boardId, String keyword);
+
+        List<Article> selectAllByUserId(Long userId);
 
 
-        Article selectDetailById(@RequestParam("id") Long id);
+        Article selectDetailById(Long id);
 
     /**
      *

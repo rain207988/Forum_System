@@ -3,6 +3,7 @@ let avatarUrl = 'image/avatar01.jpeg'; // 默认头像
 let currentArticle; // 当前访问的帖子
 let currentUserId;  // 当前登录用户
 let profileUserId;  // 查看个人信息
+let articleKeyword = ''; // 搜索关键字
 
 
 // ============================ 处理导航激活效果 ===========================

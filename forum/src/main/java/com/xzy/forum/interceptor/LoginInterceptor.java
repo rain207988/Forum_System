@@ -1,5 +1,6 @@
 package com.xzy.forum.interceptor;
 
+import com.xzy.forum.config.AppConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -21,7 +22,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         HttpSession session = request.getSession(false);
-        if(session !=null && session.getAttribute("user") != null) {
+        if(session !=null && session.getAttribute(AppConfig.USER_SESSION) != null) {
             return true;
         }
 

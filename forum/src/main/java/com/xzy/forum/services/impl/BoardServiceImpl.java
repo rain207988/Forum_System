@@ -7,6 +7,7 @@ import com.xzy.forum.model.Board;
 import com.xzy.forum.utils.ServiceValidationUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class BoardServiceImpl implements IBoardService {
 
 
     @Override
+    @Cacheable(cacheNames = "boards", key = "'top:' + #num")
     public List<Board> selectByNum(Integer num) {
         ServiceValidationUtils.requireNonNegative(num, ResultCode.FAILED_PARAMS_VALIDATE, "num");
         return boardMapper.selectByNum(num);
@@ -30,6 +32,7 @@ public class BoardServiceImpl implements IBoardService {
 
 
     @Override
+    @Cacheable(cacheNames = "boards", key = "'all-normal'")
     public List<Board> selectAllNormal() {
         List<Board> result = boardMapper.selectAllNormal();
         return result;
@@ -47,6 +50,7 @@ public class BoardServiceImpl implements IBoardService {
     }
 
     @Override
+    @Cacheable(cacheNames = "boards", key = "'id:' + #id", unless = "#result == null")
     public Board selectById(Long id) {
         ServiceValidationUtils.requirePositiveId(id, ResultCode.FAILED_BOARD_ARTICLE_COUNT, "boardId");
         return boardMapper.selectByPrimaryKey(id);

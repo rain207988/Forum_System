@@ -11,23 +11,27 @@
     <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
     <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
+
   <sql id="Base_Column_List">
     id, postUserId, receiveUserId, content, state, deleteState, createTime, updateTime
   </sql>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_message
     where id = #{id,jdbcType=BIGINT}
   </select>
+
   <insert id="insert" parameterType="com.xzy.forum.model.Message" useGeneratedKeys="true" keyProperty="id">
-    insert into t_message (id, postUserId, receiveUserId, 
-      content, state, deleteState, 
+    insert into t_message (id, postUserId, receiveUserId,
+      content, state, deleteState,
       createTime, updateTime)
-    values (#{id,jdbcType=BIGINT}, #{postUserId,jdbcType=BIGINT}, #{receiveUserId,jdbcType=BIGINT}, 
-      #{content,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT}, #{deleteState,jdbcType=TINYINT}, 
+    values (#{id,jdbcType=BIGINT}, #{postUserId,jdbcType=BIGINT}, #{receiveUserId,jdbcType=BIGINT},
+      #{content,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT}, #{deleteState,jdbcType=TINYINT},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
+
   <insert id="insertSelective" parameterType="com.xzy.forum.model.Message" useGeneratedKeys="true" keyProperty="id">
     insert into t_message
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -83,6 +87,7 @@
       </if>
     </trim>
   </insert>
+
   <update id="updateByPrimaryKeySelective" parameterType="com.xzy.forum.model.Message">
     update t_message
     <set>
@@ -110,6 +115,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+
   <update id="updateByPrimaryKey" parameterType="com.xzy.forum.model.Message">
     update t_message
     set postUserId = #{postUserId,jdbcType=BIGINT},
@@ -121,4 +127,22 @@
       updateTime = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <update id="markRead">
+    update t_message
+    set state = 1,
+        updateTime = current_timestamp
+    where id = #{id}
+      and receiveUserId = #{receiveUserId}
+      and state = 0
+      and deleteState = 0
+  </update>
+
+  <select id="countUnreadByReceiveUserId" parameterType="java.lang.Long" resultType="int">
+    select count(1)
+    from t_message
+    where receiveUserId = #{receiveUserId}
+      and state = 0
+      and deleteState = 0
+  </select>
 </mapper>

@@ -45,7 +45,7 @@
           <!-- 搜索框 -->
           <div class="nav-item d-none d-md-flex me-3">
             <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
-              <form action="./" method="get" autocomplete="off" novalidate>
+              <form action="./" method="get" autocomplete="off" novalidate id="index_search_form">
                 <div class="input-icon">
                   <span class="input-icon-addon">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -55,7 +55,8 @@
                       <path d="M21 21l-6 -6" />
                     </svg>
                   </span>
-                  <input type="text" value="" class="form-control" placeholder="输入关键字..."
+                  <input type="text" value="" class="form-control" placeholder="搜索帖子、正文或作者..."
+                    id="index_search_keyword"
                     aria-label="Search in website">
                 </div>
               </form>
@@ -428,7 +429,15 @@
     // ========================= 绑定导航栏中首页点击事件 =======================
     $('#nav_board_index').click(function () {
       // 激活效果
+      articleKeyword = '';
+      $('#index_search_keyword').val('');
       changeNavActive($(this));
+    });
+
+    $('#index_search_form').submit(function (event) {
+      event.preventDefault();
+      articleKeyword = $('#index_search_keyword').val().trim();
+      buildArticleList();
     });
 
 
@@ -488,7 +497,7 @@
         });
         // 输入框
         messageContentEl.focus();
-        retrun;
+        return;
       }
 
       // 构造发送数据
@@ -716,6 +725,7 @@
                   statusDescEl.html('[已读]');
                   // 修改本地的对象状态属性
                   messageItem.state = 1;
+                  requestMessageUnreadCount();
                 }
               }
             });
@@ -769,7 +779,7 @@
         });
         // 输入框
         replyReceiveContentEl.focus();
-        retrun;
+        return;
       }
 
       // 构造请求数据

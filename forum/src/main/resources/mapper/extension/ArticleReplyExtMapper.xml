@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzy.forum.dao.ArticleReplyMapper">
+    <resultMap id="AllInfoResultMap" type="com.xzy.forum.model.ArticleReply"
+               extends="BaseResultMap">
+        <association property="user" resultMap="com.xzy.forum.dao.UserMapper.BaseResultMap"
+                     columnPrefix="u_"/>
+    </resultMap>
+
+    <select id="selectByArticleId" parameterType="java.lang.Long" resultMap="AllInfoResultMap">
+        select
+            u.id as u_id,
+            u.avatarUrl as u_avatarUrl,
+            u.nickname as u_nickname,
+            ar.id,
+            ar.articleId,
+            ar.postUserId,
+            ar.replyId,
+            ar.replyUserId,
+            ar.content,
+            ar.likeCount,
+            ar.state,
+            ar.deleteState,
+            ar.createTime,
+            ar.updateTime
+        from t_article_reply ar
+        join t_user u on ar.postUserId = u.id
+        where ar.articleId = #{articleId,jdbcType=BIGINT}
+          and ar.deleteState = 0
+        order by ar.createTime desc
+    </select>
+</mapper>

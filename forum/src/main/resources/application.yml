@@ -8,14 +8,22 @@ spring:
         enabled: ALWAYS # 控制台输出彩⾊⽇志\
 
   datasource:
-    url: jdbc:mysql://localhost:3306/forum_db?useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: xzy13579
+    url: ${FORUM_DB_URL:jdbc:mysql://localhost:3306/forum_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=utf8}
+    username: ${FORUM_DB_USERNAME:root}
+    password: ${FORUM_DB_PASSWORD:xzy13579}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss # ⽇期格式
     default-property-inclusion: NON_NULL # 不为null时序列化
+
+  cache:
+    type: caffeine
+    cache-names:
+      - boards
+      - users
+    caffeine:
+      spec: maximumSize=200,expireAfterWrite=10m
 
 server:
   port: 58080
@@ -56,5 +64,19 @@ forum:
 
   index:
     board_num: 9 # 首页显示的板块数量
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+info:
+  app:
+    name: Forum System
+    description: 站内私信、用户中心、搜索和运维监控增强版论坛系统
 
 

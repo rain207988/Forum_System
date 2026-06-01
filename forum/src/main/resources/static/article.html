@@ -19,15 +19,7 @@
           <label class="form-label"><strong>版块</strong></label>
           <select id="article_post_borad" type="text" class="form-select" placeholder="Select a date" id="select-tags"
             value="">
-            <option value="1" selected>JAVA</option>
-            <option value="2">C++</option>
-            <option value="3">前端技术</option>
-            <option value="4">MySQL</option>
-            <option value="5">面试宝典</option>
-            <option value="6">经验分享</option>
-            <option value="7">招聘信息</option>
-            <option value="8">福利待遇</option>
-            <option value="9">灌水区</option>
+            <option value="">加载中...</option>
           </select>
         </div>
         <div class="mb-3">
@@ -61,6 +53,39 @@
 <!-- 初始化编辑器 -->
 <script type="text/javascript">
   $(function () {
+    $.ajax({
+      type : 'get',
+      url : 'board/allNormal',
+      success : function (respData) {
+        if (respData.code != 0) {
+          $.toast({
+              heading: '警告',
+              text: respData.message,
+              icon: 'warning'
+          });
+          return;
+        }
+        let boardSelectEl = $('#article_post_borad');
+        boardSelectEl.html('');
+        respData.data.forEach(function(board, index) {
+          let optionEl = $('<option></option>');
+          optionEl.val(board.id);
+          optionEl.text(board.name);
+          if (index === 0) {
+            optionEl.attr('selected', 'selected');
+          }
+          boardSelectEl.append(optionEl);
+        });
+      },
+      error : function () {
+        $.toast({
+            heading: '错误',
+            text: '版块加载失败，请稍后重试',
+            icon: 'error'
+        });
+      }
+    });
+
     var editor = editormd("edit-article", {
       width: "100%",
       height: "100%",
