@@ -1,29 +1,143 @@
-2026-05-13T14:23:31.818+08:00  INFO 28316 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Starting ArticleServiceImplTest using Java 17.0.12 with PID 28316 (started by 37535 in D:\code_java\forum\Forum_System\forum)
-2026-05-13T14:23:31.825+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Running with Spring Boot v4.0.3, Spring v7.0.5
-2026-05-13T14:23:31.827+08:00  INFO 28316 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : No active profile set, falling back to 1 default profile: "default"
-2026-05-13T14:23:33.657+08:00  INFO 28316 --- [论坛项目] [main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
-2026-05-13T14:23:34.440+08:00  INFO 28316 --- [论坛项目] [main] c.x.f.s.impl.ArticleServiceImplTest      : Started ArticleServiceImplTest in 3.028 seconds (process running for 4.405)
-2026-05-13T14:23:35.275+08:00  INFO 28316 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-05-13T14:23:35.511+08:00  INFO 28316 --- [论坛项目] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@147097ad
-2026-05-13T14:23:35.513+08:00  INFO 28316 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-05-13T14:23:35.534+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.A.selectByPrimaryKey             : ==>  Preparing: select id, boardId, userId, title, visitCount, replyCount, likeCount, state, deleteState, createTime, updateTime , content from t_article where id = ?
-2026-05-13T14:23:35.555+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.A.selectByPrimaryKey             : ==> Parameters: 2(Long)
-2026-05-13T14:23:35.576+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.A.selectByPrimaryKey             : <==      Total: 1
-2026-05-13T14:23:35.597+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : ==>  Preparing: update t_article SET deleteState = ?, updateTime = ? where id = ?
-2026-05-13T14:23:35.598+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : ==> Parameters: 1(Byte), 2026-05-13 14:23:35.58(Timestamp), 2(Long)
-2026-05-13T14:23:35.603+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.A.updateByPrimaryKeySelective    : <==    Updates: 1
-2026-05-13T14:23:35.603+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
-2026-05-13T14:23:35.604+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 1(Long)
-2026-05-13T14:23:35.616+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
-2026-05-13T14:23:35.616+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.U.decreaseArticleCountById       : ==>  Preparing: update t_user set articleCount = case when articleCount > 0 then articleCount - 1 else 0 end where id = ?
-2026-05-13T14:23:35.617+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.U.decreaseArticleCountById       : ==> Parameters: 1(Long)
-2026-05-13T14:23:35.619+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.U.decreaseArticleCountById       : <==    Updates: 1
-2026-05-13T14:23:35.620+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : ==>  Preparing: select id, name, articleCount, sort, state, deleteState, createTime, updateTime from t_board where id = ?
-2026-05-13T14:23:35.620+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : ==> Parameters: 1(Long)
-2026-05-13T14:23:35.630+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.BoardMapper.selectByPrimaryKey   : <==      Total: 1
-2026-05-13T14:23:35.631+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.B.decreaseArticleCountById       : ==>  Preparing: update t_board set articleCount = case when articleCount > 0 then articleCount - 1 else 0 end where id = ?
-2026-05-13T14:23:35.631+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.B.decreaseArticleCountById       : ==> Parameters: 1(Long)
-2026-05-13T14:23:35.632+08:00 DEBUG 28316 --- [论坛项目] [main] c.x.f.d.B.decreaseArticleCountById       : <==    Updates: 1
-2026-05-13T14:23:35.633+08:00  INFO 28316 --- [论坛项目] [main] c.x.f.services.impl.ArticleServiceImpl   : 帖子删除成功，articleId=2
-2026-05-13T14:23:35.664+08:00  INFO 28316 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2026-05-13T14:23:35.674+08:00  INFO 28316 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-06-01T00:01:24.020+08:00  INFO 18800 --- [论坛项目] [main] .c.MessageControllerMysqlIntegrationTest : Starting MessageControllerMysqlIntegrationTest using Java 17.0.12 with PID 18800 (started by 37535 in D:\code_java\forum\Forum_System\forum)
+2026-06-01T00:01:24.026+08:00 DEBUG 18800 --- [论坛项目] [main] .c.MessageControllerMysqlIntegrationTest : Running with Spring Boot v4.0.3, Spring v7.0.5
+2026-06-01T00:01:24.026+08:00  INFO 18800 --- [论坛项目] [main] .c.MessageControllerMysqlIntegrationTest : No active profile set, falling back to 1 default profile: "default"
+2026-06-01T00:01:25.475+08:00  INFO 18800 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-01T00:01:25.686+08:00  INFO 18800 --- [论坛项目] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6ca33187
+2026-06-01T00:01:25.687+08:00  INFO 18800 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-01T00:01:25.985+08:00  INFO 18800 --- [论坛项目] [main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-06-01T00:01:26.951+08:00  INFO 18800 --- [论坛项目] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoints beneath base path '/actuator'
+2026-06-01T00:01:27.062+08:00  INFO 18800 --- [论坛项目] [main] .c.MessageControllerMysqlIntegrationTest : Started MessageControllerMysqlIntegrationTest in 3.305 seconds (process running for 4.19)
+2026-06-01T00:01:27.607+08:00  INFO 18800 --- [论坛项目] [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-01T00:01:27.608+08:00  INFO 18800 --- [论坛项目] [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-01T00:01:27.609+08:00  INFO 18800 --- [论坛项目] [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-06-01T00:01:27.682+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:27.703+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 1(Long)
+2026-06-01T00:01:27.723+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:27.724+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:27.725+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 2(Long)
+2026-06-01T00:01:27.726+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:27.741+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==>  Preparing: insert into t_message ( postUserId, receiveUserId, content, state, deleteState, createTime, updateTime ) values ( ?, ?, ?, ?, ?, ?, ? )
+2026-06-01T00:01:27.742+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==> Parameters: 1(Long), 2(Long), http-send-114451171751600(String), 0(Byte), 0(Byte), 2026-06-01 00:01:27.726(Timestamp), 2026-06-01 00:01:27.726(Timestamp)
+2026-06-01T00:01:27.747+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : <==    Updates: 1
+2026-06-01T00:01:27.855+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : ==>  Preparing: select count(1) from t_message where receiveUserId = ? and state = 0 and deleteState = 0
+2026-06-01T00:01:27.856+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : ==> Parameters: 2(Long)
+2026-06-01T00:01:27.859+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : <==      Total: 1
+2026-06-01T00:01:27.864+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==>  Preparing: select pu.id as pu_id, pu.nickname as pu_nickname, pu.avatarUrl as pu_avatarUrl, ru.id as ru_id, ru.nickname as ru_nickname, ru.avatarUrl as ru_avatarUrl, m.id, m.postUserId, m.receiveUserId, m.content, m.state, m.deleteState, m.createTime, m.updateTime from t_message m join t_user pu on m.postUserId = pu.id join t_user ru on m.receiveUserId = ru.id where m.receiveUserId = ? and m.deleteState = 0 order by m.createTime desc
+2026-06-01T00:01:27.865+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==> Parameters: 2(Long)
+2026-06-01T00:01:27.867+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : <==      Total: 1
+2026-06-01T00:01:27.904+08:00  INFO 18800 --- [论坛项目] [main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-01T00:01:27.904+08:00  INFO 18800 --- [论坛项目] [main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-01T00:01:27.906+08:00  INFO 18800 --- [论坛项目] [main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-06-01T00:01:27.908+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:27.909+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 1(Long)
+2026-06-01T00:01:27.911+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:27.912+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:27.914+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 2(Long)
+2026-06-01T00:01:27.917+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:27.918+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==>  Preparing: insert into t_message ( postUserId, receiveUserId, content, state, deleteState, createTime, updateTime ) values ( ?, ?, ?, ?, ?, ?, ? )
+2026-06-01T00:01:27.919+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==> Parameters: 1(Long), 2(Long), http-source-114451466264700(String), 0(Byte), 0(Byte), 2026-06-01 00:01:27.918(Timestamp), 2026-06-01 00:01:27.918(Timestamp)
+2026-06-01T00:01:27.921+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : <==    Updates: 1
+2026-06-01T00:01:27.921+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==>  Preparing: select pu.id as pu_id, pu.nickname as pu_nickname, pu.avatarUrl as pu_avatarUrl, ru.id as ru_id, ru.nickname as ru_nickname, ru.avatarUrl as ru_avatarUrl, m.id, m.postUserId, m.receiveUserId, m.content, m.state, m.deleteState, m.createTime, m.updateTime from t_message m join t_user pu on m.postUserId = pu.id join t_user ru on m.receiveUserId = ru.id where m.receiveUserId = ? and m.deleteState = 0 order by m.createTime desc
+2026-06-01T00:01:27.922+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==> Parameters: 2(Long)
+2026-06-01T00:01:27.924+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : <==      Total: 1
+2026-06-01T00:01:27.927+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectByPrimaryKey             : ==>  Preparing: select id, postUserId, receiveUserId, content, state, deleteState, createTime, updateTime from t_message where id = ?
+2026-06-01T00:01:27.928+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectByPrimaryKey             : ==> Parameters: 11(Long)
+2026-06-01T00:01:27.931+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectByPrimaryKey             : <==      Total: 1
+2026-06-01T00:01:27.934+08:00 DEBUG 18800 --- [论坛项目] [main] c.xzy.forum.dao.MessageMapper.markRead   : ==>  Preparing: update t_message set state = 1, updateTime = current_timestamp where id = ? and receiveUserId = ? and state = 0 and deleteState = 0
+2026-06-01T00:01:27.935+08:00 DEBUG 18800 --- [论坛项目] [main] c.xzy.forum.dao.MessageMapper.markRead   : ==> Parameters: 11(Long), 2(Long)
+2026-06-01T00:01:27.937+08:00 DEBUG 18800 --- [论坛项目] [main] c.xzy.forum.dao.MessageMapper.markRead   : <==    Updates: 1
+2026-06-01T00:01:27.939+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : ==>  Preparing: select count(1) from t_message where receiveUserId = ? and state = 0 and deleteState = 0
+2026-06-01T00:01:27.940+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : ==> Parameters: 2(Long)
+2026-06-01T00:01:27.941+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : <==      Total: 1
+2026-06-01T00:01:27.943+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.MessageMapper.selectDetailById   : ==>  Preparing: select pu.id as pu_id, pu.nickname as pu_nickname, pu.avatarUrl as pu_avatarUrl, ru.id as ru_id, ru.nickname as ru_nickname, ru.avatarUrl as ru_avatarUrl, m.id, m.postUserId, m.receiveUserId, m.content, m.state, m.deleteState, m.createTime, m.updateTime from t_message m join t_user pu on m.postUserId = pu.id join t_user ru on m.receiveUserId = ru.id where m.id = ? and m.deleteState = 0
+2026-06-01T00:01:27.943+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.MessageMapper.selectDetailById   : ==> Parameters: 11(Long)
+2026-06-01T00:01:27.945+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.MessageMapper.selectDetailById   : <==      Total: 1
+2026-06-01T00:01:27.946+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.updateByPrimaryKeySelective    : ==>  Preparing: update t_message SET state = ?, updateTime = ? where id = ?
+2026-06-01T00:01:27.947+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.updateByPrimaryKeySelective    : ==> Parameters: 2(Byte), 2026-06-01 00:01:27.946(Timestamp), 11(Long)
+2026-06-01T00:01:27.949+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.updateByPrimaryKeySelective    : <==    Updates: 1
+2026-06-01T00:01:27.949+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:27.950+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 2(Long)
+2026-06-01T00:01:27.951+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:27.951+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:27.952+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 1(Long)
+2026-06-01T00:01:27.953+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:27.954+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==>  Preparing: insert into t_message ( postUserId, receiveUserId, content, state, deleteState, createTime, updateTime ) values ( ?, ?, ?, ?, ?, ?, ? )
+2026-06-01T00:01:27.955+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==> Parameters: 2(Long), 1(Long), http-reply-114451500838700(String), 0(Byte), 0(Byte), 2026-06-01 00:01:27.954(Timestamp), 2026-06-01 00:01:27.954(Timestamp)
+2026-06-01T00:01:27.956+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : <==    Updates: 1
+2026-06-01T00:01:27.958+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==>  Preparing: select pu.id as pu_id, pu.nickname as pu_nickname, pu.avatarUrl as pu_avatarUrl, ru.id as ru_id, ru.nickname as ru_nickname, ru.avatarUrl as ru_avatarUrl, m.id, m.postUserId, m.receiveUserId, m.content, m.state, m.deleteState, m.createTime, m.updateTime from t_message m join t_user pu on m.postUserId = pu.id join t_user ru on m.receiveUserId = ru.id where m.receiveUserId = ? and m.deleteState = 0 order by m.createTime desc
+2026-06-01T00:01:27.960+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==> Parameters: 1(Long)
+2026-06-01T00:01:27.961+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : <==      Total: 1
+2026-06-01T00:01:28.004+08:00  INFO 18800 --- [论坛项目] [main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.xzy.forum.services.impl.MessageServiceMysqlIntegrationTest]: MessageServiceMysqlIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-06-01T00:01:28.020+08:00  INFO 18800 --- [论坛项目] [main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.xzy.forum.ForumApplication for test class com.xzy.forum.services.impl.MessageServiceMysqlIntegrationTest
+2026-06-01T00:01:28.030+08:00  INFO 18800 --- [论坛项目] [main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+2026-06-01T00:01:28.068+08:00  INFO 18800 --- [论坛项目] [main] f.s.i.MessageServiceMysqlIntegrationTest : Starting MessageServiceMysqlIntegrationTest using Java 17.0.12 with PID 18800 (started by 37535 in D:\code_java\forum\Forum_System\forum)
+2026-06-01T00:01:28.069+08:00 DEBUG 18800 --- [论坛项目] [main] f.s.i.MessageServiceMysqlIntegrationTest : Running with Spring Boot v4.0.3, Spring v7.0.5
+2026-06-01T00:01:28.069+08:00  INFO 18800 --- [论坛项目] [main] f.s.i.MessageServiceMysqlIntegrationTest : No active profile set, falling back to 1 default profile: "default"
+2026-06-01T00:01:28.486+08:00  INFO 18800 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-06-01T00:01:28.494+08:00  INFO 18800 --- [论坛项目] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@16a89351
+2026-06-01T00:01:28.495+08:00  INFO 18800 --- [论坛项目] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-06-01T00:01:28.604+08:00  INFO 18800 --- [论坛项目] [main] f.s.i.MessageServiceMysqlIntegrationTest : Started MessageServiceMysqlIntegrationTest in 0.575 seconds (process running for 5.732)
+2026-06-01T00:01:28.615+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : ==>  Preparing: select count(1) from t_message where receiveUserId = ? and state = 0 and deleteState = 0
+2026-06-01T00:01:28.616+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : ==> Parameters: 2(Long)
+2026-06-01T00:01:28.618+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : <==      Total: 1
+2026-06-01T00:01:28.620+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:28.622+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 1(Long)
+2026-06-01T00:01:28.625+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:28.625+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:28.626+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 2(Long)
+2026-06-01T00:01:28.631+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:28.633+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==>  Preparing: insert into t_message ( postUserId, receiveUserId, content, state, deleteState, createTime, updateTime ) values ( ?, ?, ?, ?, ?, ?, ? )
+2026-06-01T00:01:28.635+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==> Parameters: 1(Long), 2(Long), mysql-integration-send(String), 0(Byte), 0(Byte), 2026-06-01 00:01:28.632(Timestamp), 2026-06-01 00:01:28.632(Timestamp)
+2026-06-01T00:01:28.637+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : <==    Updates: 1
+2026-06-01T00:01:28.639+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==>  Preparing: select pu.id as pu_id, pu.nickname as pu_nickname, pu.avatarUrl as pu_avatarUrl, ru.id as ru_id, ru.nickname as ru_nickname, ru.avatarUrl as ru_avatarUrl, m.id, m.postUserId, m.receiveUserId, m.content, m.state, m.deleteState, m.createTime, m.updateTime from t_message m join t_user pu on m.postUserId = pu.id join t_user ru on m.receiveUserId = ru.id where m.receiveUserId = ? and m.deleteState = 0 order by m.createTime desc
+2026-06-01T00:01:28.639+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==> Parameters: 2(Long)
+2026-06-01T00:01:28.643+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : <==      Total: 1
+2026-06-01T00:01:28.720+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : ==>  Preparing: select count(1) from t_message where receiveUserId = ? and state = 0 and deleteState = 0
+2026-06-01T00:01:28.721+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : ==> Parameters: 2(Long)
+2026-06-01T00:01:28.722+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : <==      Total: 1
+2026-06-01T00:01:28.724+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectByPrimaryKey             : ==>  Preparing: select id, postUserId, receiveUserId, content, state, deleteState, createTime, updateTime from t_message where id = ?
+2026-06-01T00:01:28.725+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectByPrimaryKey             : ==> Parameters: 13(Long)
+2026-06-01T00:01:28.726+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectByPrimaryKey             : <==      Total: 1
+2026-06-01T00:01:28.726+08:00 DEBUG 18800 --- [论坛项目] [main] c.xzy.forum.dao.MessageMapper.markRead   : ==>  Preparing: update t_message set state = 1, updateTime = current_timestamp where id = ? and receiveUserId = ? and state = 0 and deleteState = 0
+2026-06-01T00:01:28.726+08:00 DEBUG 18800 --- [论坛项目] [main] c.xzy.forum.dao.MessageMapper.markRead   : ==> Parameters: 13(Long), 2(Long)
+2026-06-01T00:01:28.731+08:00 DEBUG 18800 --- [论坛项目] [main] c.xzy.forum.dao.MessageMapper.markRead   : <==    Updates: 1
+2026-06-01T00:01:28.732+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : ==>  Preparing: select count(1) from t_message where receiveUserId = ? and state = 0 and deleteState = 0
+2026-06-01T00:01:28.732+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : ==> Parameters: 2(Long)
+2026-06-01T00:01:28.733+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.countUnreadByReceiveUserId     : <==      Total: 1
+2026-06-01T00:01:28.734+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:28.734+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 1(Long)
+2026-06-01T00:01:28.735+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:28.736+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:28.736+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 2(Long)
+2026-06-01T00:01:28.737+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:28.739+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==>  Preparing: insert into t_message ( postUserId, receiveUserId, content, state, deleteState, createTime, updateTime ) values ( ?, ?, ?, ?, ?, ?, ? )
+2026-06-01T00:01:28.741+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==> Parameters: 1(Long), 2(Long), mysql-integration-reply-source(String), 0(Byte), 0(Byte), 2026-06-01 00:01:28.739(Timestamp), 2026-06-01 00:01:28.739(Timestamp)
+2026-06-01T00:01:28.742+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : <==    Updates: 1
+2026-06-01T00:01:28.742+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==>  Preparing: select pu.id as pu_id, pu.nickname as pu_nickname, pu.avatarUrl as pu_avatarUrl, ru.id as ru_id, ru.nickname as ru_nickname, ru.avatarUrl as ru_avatarUrl, m.id, m.postUserId, m.receiveUserId, m.content, m.state, m.deleteState, m.createTime, m.updateTime from t_message m join t_user pu on m.postUserId = pu.id join t_user ru on m.receiveUserId = ru.id where m.receiveUserId = ? and m.deleteState = 0 order by m.createTime desc
+2026-06-01T00:01:28.743+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==> Parameters: 2(Long)
+2026-06-01T00:01:28.745+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : <==      Total: 2
+2026-06-01T00:01:28.746+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.MessageMapper.selectDetailById   : ==>  Preparing: select pu.id as pu_id, pu.nickname as pu_nickname, pu.avatarUrl as pu_avatarUrl, ru.id as ru_id, ru.nickname as ru_nickname, ru.avatarUrl as ru_avatarUrl, m.id, m.postUserId, m.receiveUserId, m.content, m.state, m.deleteState, m.createTime, m.updateTime from t_message m join t_user pu on m.postUserId = pu.id join t_user ru on m.receiveUserId = ru.id where m.id = ? and m.deleteState = 0
+2026-06-01T00:01:28.748+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.MessageMapper.selectDetailById   : ==> Parameters: 14(Long)
+2026-06-01T00:01:28.750+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.MessageMapper.selectDetailById   : <==      Total: 1
+2026-06-01T00:01:28.750+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.updateByPrimaryKeySelective    : ==>  Preparing: update t_message SET state = ?, updateTime = ? where id = ?
+2026-06-01T00:01:28.751+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.updateByPrimaryKeySelective    : ==> Parameters: 2(Byte), 2026-06-01 00:01:28.75(Timestamp), 14(Long)
+2026-06-01T00:01:28.753+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.updateByPrimaryKeySelective    : <==    Updates: 1
+2026-06-01T00:01:28.753+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:28.753+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 2(Long)
+2026-06-01T00:01:28.754+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:28.755+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==>  Preparing: select id, username, password, nickname, phoneNum, email, gender, salt, avatarUrl, articleCount, isAdmin, remark, state, deleteState, createTime, updateTime from t_user where id = ?
+2026-06-01T00:01:28.755+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : ==> Parameters: 1(Long)
+2026-06-01T00:01:28.758+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.UserMapper.selectByPrimaryKey  : <==      Total: 1
+2026-06-01T00:01:28.758+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==>  Preparing: insert into t_message ( postUserId, receiveUserId, content, state, deleteState, createTime, updateTime ) values ( ?, ?, ?, ?, ?, ?, ? )
+2026-06-01T00:01:28.760+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : ==> Parameters: 2(Long), 1(Long), mysql-integration-reply(String), 0(Byte), 0(Byte), 2026-06-01 00:01:28.758(Timestamp), 2026-06-01 00:01:28.758(Timestamp)
+2026-06-01T00:01:28.763+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.dao.MessageMapper.insertSelective  : <==    Updates: 1
+2026-06-01T00:01:28.764+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==>  Preparing: select pu.id as pu_id, pu.nickname as pu_nickname, pu.avatarUrl as pu_avatarUrl, ru.id as ru_id, ru.nickname as ru_nickname, ru.avatarUrl as ru_avatarUrl, m.id, m.postUserId, m.receiveUserId, m.content, m.state, m.deleteState, m.createTime, m.updateTime from t_message m join t_user pu on m.postUserId = pu.id join t_user ru on m.receiveUserId = ru.id where m.receiveUserId = ? and m.deleteState = 0 order by m.createTime desc
+2026-06-01T00:01:28.765+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : ==> Parameters: 1(Long)
+2026-06-01T00:01:28.766+08:00 DEBUG 18800 --- [论坛项目] [main] c.x.f.d.M.selectInboxByReceiveUserId     : <==      Total: 1
+2026-06-01T00:01:28.818+08:00  INFO 18800 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-06-01T00:01:28.831+08:00  INFO 18800 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-06-01T00:01:28.834+08:00  INFO 18800 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2026-06-01T00:01:28.852+08:00  INFO 18800 --- [论坛项目] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+2026-06-01T00:02:36.274+08:00  INFO 8592 --- [论坛项目] [main] com.xzy.forum.ForumApplicationTests      : Starting ForumApplicationTests using Java 17.0.12 with PID 8592 (started by 37535 in D:\code_java\forum\Forum_System\forum)
+2026-06-01T00:02:36.276+08:00  INFO 8592 --- [论坛项目] [main] com.xzy.forum.ForumApplicationTests      : The following 1 profile is active: "test"
+2026-06-01T00:02:39.066+08:00  INFO 8592 --- [论坛项目] [main] com.xzy.forum.ForumApplicationTests      : Started ForumApplicationTests in 3.06 seconds (process running for 3.943)
