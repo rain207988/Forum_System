@@ -61,11 +61,14 @@ springdoc:
 
 # 项⽬⾃定义相关配置
 forum:
-  login:
-    url: sign-in.html # 未登录状况下强制跳转⻚⾯
-
   index:
     board_num: 9 # 首页显示的板块数量
+  jwt:
+    secret: ${FORUM_JWT_SECRET:forum-jwt-secret-please-change-in-production-2026}
+    expire-hours: ${FORUM_JWT_EXPIRE_HOURS:12}
+    issuer: ${FORUM_JWT_ISSUER:forum-system}
+    header: Authorization
+    prefix: "Bearer "
 
 management:
   endpoints:

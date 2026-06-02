@@ -469,6 +469,7 @@
         type : 'get',
         url : 'user/logout',
         complete : function () {
+          clearForumAuth();
           // 当前请求完成时，不论成功与失败都跳转到登录页面
           location.assign('/sign-in.html');
         }

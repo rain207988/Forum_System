@@ -2,14 +2,13 @@ package com.xzy.forum.controller;
 
 import com.xzy.forum.common.AppResult;
 import com.xzy.forum.common.ResultCode;
-import com.xzy.forum.config.AppConfig;
+import com.xzy.forum.auth.AuthContext;
 import com.xzy.forum.model.Article;
 import com.xzy.forum.model.ArticleReply;
 import com.xzy.forum.model.User;
 import com.xzy.forum.services.IArticleReplyService;
 import com.xzy.forum.services.IArticleService;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpSession;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,10 +29,9 @@ public class ArticleReplyController {
     private IArticleReplyService articleReplyService;
 
     @PostMapping("/create")
-    public AppResult create(HttpSession session,
-                            @RequestParam("articleId") @NonNull Long articleId,
+    public AppResult create(@RequestParam("articleId") @NonNull Long articleId,
                             @RequestParam("content") @NonNull String content) {
-        User user = requireLoginUser(session);
+        User user = requireLoginUser();
         if (user.getState() == 1) {
             return AppResult.failed(ResultCode.FAILED_USER_BANNED);
         }
@@ -64,10 +62,7 @@ public class ArticleReplyController {
         return AppResult.success(articleReplies);
     }
 
-    private User requireLoginUser(HttpSession session) {
-        if (session == null || session.getAttribute(AppConfig.USER_SESSION) == null) {
-            throw new IllegalArgumentException(ResultCode.FAILED_FORBIDDEN.getMessage());
-        }
-        return (User) session.getAttribute(AppConfig.USER_SESSION);
+    private User requireLoginUser() {
+        return AuthContext.requireCurrentUser();
     }
 }

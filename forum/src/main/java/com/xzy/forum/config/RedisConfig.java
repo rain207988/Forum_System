@@ -44,12 +44,6 @@ public class RedisConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "spring.session.store-type", havingValue = "redis")
-    public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
-        return redisValueSerializer();
-    }
-
-    @Bean
     @ConditionalOnProperty(name = "spring.cache.type", havingValue = "redis")
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();

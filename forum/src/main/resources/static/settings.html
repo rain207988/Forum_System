@@ -298,6 +298,7 @@
           }
           // 如查密码修改成功强制登录
           if (type == 2) {
+            clearForumAuth();
             location.assign('sign-in.html');
             return;
           }

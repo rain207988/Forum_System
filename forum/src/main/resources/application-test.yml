@@ -12,15 +12,11 @@ spring:
     default-property-inclusion: NON_NULL
   cache:
     type: none
-  session:
-    store-type: none
 
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
 
 forum:
-  login:
-    url: sign-in.html
   index:
     board_num: 9
 

@@ -5,5 +5,5 @@ public class AppConfig {
     private AppConfig() {
     }
 
-    public static final String USER_SESSION = "user";
+    public static final String AUTH_USER_REQUEST_ATTRIBUTE = "authUser";
 }

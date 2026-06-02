@@ -4,6 +4,75 @@ let currentArticle; // 当前访问的帖子
 let currentUserId;  // 当前登录用户
 let profileUserId;  // 查看个人信息
 let articleKeyword = ''; // 搜索关键字
+const FORUM_TOKEN_KEY = 'forum_access_token';
+const FORUM_TOKEN_TYPE_KEY = 'forum_token_type';
+
+function getForumToken() {
+  return window.localStorage.getItem(FORUM_TOKEN_KEY);
+}
+
+function getForumTokenType() {
+  return window.localStorage.getItem(FORUM_TOKEN_TYPE_KEY) || 'Bearer';
+}
+
+function storeForumAuth(authData) {
+  if (!authData || !authData.token) {
+    return;
+  }
+  window.localStorage.setItem(FORUM_TOKEN_KEY, authData.token);
+  window.localStorage.setItem(FORUM_TOKEN_TYPE_KEY, authData.tokenType || 'Bearer');
+}
+
+function clearForumAuth() {
+  window.localStorage.removeItem(FORUM_TOKEN_KEY);
+  window.localStorage.removeItem(FORUM_TOKEN_TYPE_KEY);
+}
+
+function isAuthPage() {
+  const path = window.location.pathname || '';
+  return path.endsWith('/sign-in.html')
+    || path.endsWith('/sign-up.html')
+    || path.endsWith('sign-in.html')
+    || path.endsWith('sign-up.html');
+}
+
+function redirectToLogin() {
+  if (isAuthPage()) {
+    return;
+  }
+  clearForumAuth();
+  window.location.assign('/sign-in.html');
+}
+
+function initForumAjaxAuth() {
+  if (typeof $ === 'undefined' || $.forumAjaxAuthInitialized) {
+    return;
+  }
+
+  $.ajaxSetup({
+    beforeSend: function(xhr) {
+      const token = getForumToken();
+      if (!token) {
+        return;
+      }
+      xhr.setRequestHeader('Authorization', getForumTokenType() + ' ' + token);
+    }
+  });
+
+  $(document).ajaxError(function(event, xhr) {
+    if (xhr && xhr.status === 401) {
+      redirectToLogin();
+    }
+  });
+
+  $.forumAjaxAuthInitialized = true;
+}
+
+initForumAjaxAuth();
+
+if (!isAuthPage() && !getForumToken()) {
+  redirectToLogin();
+}
 
 
 // ============================ 处理导航激活效果 ===========================

@@ -87,8 +87,10 @@
   <script src="./dist/js/jquery-3.6.3.min.js"></script>
   <script src="./dist/js/tabler.min.js"></script>
   <script src="./dist/js/jquery.toast.js"></script>
+  <script src="./js/common.js"></script>
   <script>
     $(function () {
+      clearForumAuth();
       // 获取控件
       // 用户名
       let usernameEl = $('#username');
@@ -126,6 +128,7 @@
           data : postData,
           success : function (respData) {
             if (respData.code == 0) {
+              storeForumAuth(respData.data);
               location.assign('/index.html');
             } else {
               // 提示信息

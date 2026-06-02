@@ -2,7 +2,7 @@ package com.xzy.forum.controller;
 
 import com.xzy.forum.common.AppResult;
 import com.xzy.forum.common.ResultCode;
-import com.xzy.forum.config.AppConfig;
+import com.xzy.forum.auth.AuthContext;
 import com.xzy.forum.model.Article;
 import com.xzy.forum.model.Board;
 import com.xzy.forum.model.User;
@@ -10,7 +10,6 @@ import com.xzy.forum.services.IArticleService;
 import com.xzy.forum.services.IBoardService;
 import com.xzy.forum.utils.StringUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +35,10 @@ public class ArticleController {
     private IArticleService articleService;
 
     @PostMapping("/create")
-    public AppResult create(HttpSession session,
-                            @RequestParam("boardId") Long boardId,
+    public AppResult create(@RequestParam("boardId") Long boardId,
                             @RequestParam("title") String title,
                             @RequestParam("content") String content) {
-        User user = requireLoginUser(session);
+        User user = requireLoginUser();
         if (user.getState() == 1) {
             return AppResult.failed(ResultCode.FAILED_USER_BANNED);
         }
@@ -77,29 +75,27 @@ public class ArticleController {
     }
 
     @GetMapping("/getAllByUserId")
-    public AppResult<List<Article>> getAllByUserId(HttpSession session,
-                                                   @RequestParam(value = "userId", required = false) Long userId) {
+    public AppResult<List<Article>> getAllByUserId(@RequestParam(value = "userId", required = false) Long userId) {
         if (userId == null) {
-            userId = requireLoginUser(session).getId();
+            userId = requireLoginUser().getId();
         }
         List<Article> articles = articleService.selectAllByUserId(userId);
         return AppResult.success(articles);
     }
 
     @GetMapping("/details")
-    public AppResult<Article> getDetails(HttpSession session, @RequestParam("id") @NonNull Long id) {
-        User user = requireLoginUser(session);
+    public AppResult<Article> getDetails(@RequestParam("id") @NonNull Long id) {
+        User user = requireLoginUser();
         Article article = articleService.selectDetailById(id);
         article.setOwn(article.getUserId().equals(user.getId()));
         return AppResult.success(article);
     }
 
     @PostMapping("/modify")
-    public AppResult modify(HttpSession session,
-                            @RequestParam("id") Long id,
+    public AppResult modify(@RequestParam("id") Long id,
                             @RequestParam("title") String title,
                             @RequestParam("content") String content) {
-        User user = requireLoginUser(session);
+        User user = requireLoginUser();
         if (user.getState() == 1) {
             return AppResult.failed(ResultCode.FAILED_USER_BANNED);
         }
@@ -124,8 +120,8 @@ public class ArticleController {
     }
 
     @PostMapping("/thumbsUp")
-    public AppResult thumbsUp(HttpSession session, @RequestParam("id") @NonNull Long id) {
-        User user = requireLoginUser(session);
+    public AppResult thumbsUp(@RequestParam("id") @NonNull Long id) {
+        User user = requireLoginUser();
         if (user.getState() == 1) {
             log.warn(ResultCode.FAILED_USER_BANNED.toString());
             return AppResult.failed(ResultCode.FAILED_USER_BANNED);
@@ -136,8 +132,8 @@ public class ArticleController {
     }
 
     @PostMapping("/delete")
-    public AppResult deleteById(HttpSession session, @RequestParam("id") Long id) {
-        User user = requireLoginUser(session);
+    public AppResult deleteById(@RequestParam("id") Long id) {
+        User user = requireLoginUser();
         Article article = articleService.selectById(id);
 
         if (user.getState() == 1) {
@@ -154,10 +150,7 @@ public class ArticleController {
         return AppResult.success("删除成功", null);
     }
 
-    private User requireLoginUser(HttpSession session) {
-        if (session == null || session.getAttribute(AppConfig.USER_SESSION) == null) {
-            throw new IllegalArgumentException(ResultCode.FAILED_FORBIDDEN.getMessage());
-        }
-        return (User) session.getAttribute(AppConfig.USER_SESSION);
+    private User requireLoginUser() {
+        return AuthContext.requireCurrentUser();
     }
 }

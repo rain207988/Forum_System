@@ -9,8 +9,6 @@ spring:
       mode: always
   cache:
     type: simple
-  session:
-    store-type: none
   h2:
     console:
       enabled: true
