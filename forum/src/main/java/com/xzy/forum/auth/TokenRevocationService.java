@@ -1,5 +1,6 @@
 package com.xzy.forum.auth;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -10,6 +11,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 public class TokenRevocationService {
 
@@ -37,8 +39,8 @@ public class TokenRevocationService {
             try {
                 redisTemplate.opsForValue().set(tokenKey, Boolean.TRUE, ttl);
                 return;
-            } catch (Exception ignored) {
-                // fallback to local blacklist when redis is unavailable
+            } catch (Exception ex) {
+                log.warn("Redis token 拉黑写入失败，降级为本地黑名单，key={}, reason={}", tokenKey, ex.getMessage());
             }
         }
 
@@ -54,8 +56,8 @@ public class TokenRevocationService {
         if (redisTemplate != null) {
             try {
                 return Boolean.TRUE.equals(redisTemplate.hasKey(tokenKey));
-            } catch (Exception ignored) {
-                // fallback to local blacklist when redis is unavailable
+            } catch (Exception ex) {
+                log.warn("Redis token 拉黑读取失败，降级为本地黑名单，key={}, reason={}", tokenKey, ex.getMessage());
             }
         }
 

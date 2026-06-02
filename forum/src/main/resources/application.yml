@@ -10,7 +10,7 @@ spring:
   datasource:
     url: ${FORUM_DB_URL:jdbc:mysql://localhost:3306/forum_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=utf8}
     username: ${FORUM_DB_USERNAME:root}
-    password: ${FORUM_DB_PASSWORD:xzy13579}
+    password: ${FORUM_DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jackson:
@@ -73,7 +73,7 @@ forum:
     board_num: 9 # 首页显示的板块数量
   features:
     swagger-enabled: true
-    test-api-enabled: true
+    test-api-enabled: false
   jwt:
     secret: ${FORUM_JWT_SECRET:forum-jwt-secret-please-change-in-production-2026}
     expire-hours: ${FORUM_JWT_EXPIRE_HOURS:2}

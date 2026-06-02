@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-@ConditionalOnProperty(prefix = "forum.features", name = "swagger-enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "forum.features", name = "swagger-enabled", havingValue = "true")
 public class SwaggerConfig {
 
     @Value("${server.port:8080}")

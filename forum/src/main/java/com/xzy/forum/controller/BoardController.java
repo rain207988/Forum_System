@@ -1,13 +1,10 @@
 package com.xzy.forum.controller;
-
-
 import com.xzy.forum.common.AppResult;
 import com.xzy.forum.common.ResultCode;
 import com.xzy.forum.exception.ApplicationException;
 import com.xzy.forum.model.Board;
 import com.xzy.forum.services.IBoardService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,12 +18,14 @@ import java.util.List;
 @RequestMapping("/board")
 public class BoardController {
 
-    @Value("${forum.index.board.num:9}")
-    private Integer indexBoardNum;
+    private final Integer indexBoardNum;
+    private final IBoardService boardService;
 
-
-    @Autowired
-    private IBoardService boardService;
+    public BoardController(@Value("${forum.index.board.num:9}") Integer indexBoardNum,
+                           IBoardService boardService) {
+        this.indexBoardNum = indexBoardNum;
+        this.boardService = boardService;
+    }
 
     @GetMapping("/toplist")
     public AppResult<List<Board>> getTopList() {
@@ -34,27 +33,20 @@ public class BoardController {
         List<Board> boards = boardService.selectByNum(indexBoardNum);
         return AppResult.success(boards);
     }
-
-
-// 指定接⼝URL映射
     @GetMapping("/allNormal")
-    public AppResult<List<Board>> allNormal () {
-        // 调⽤Service层获取版块信息
+    public AppResult<List<Board>> allNormal() {
         List<Board> boards = boardService.selectAllNormal();
-        // 返回结果
         return AppResult.success(boards);
     }
 
-
     @GetMapping("getById")
-    public AppResult<Board> getById( @RequestParam("id") Long id) {
+    public AppResult<Board> getById(@RequestParam("id") Long id) {
         Board board = boardService.selectById(id);
 
-        if(board == null){
-            log.warn(ResultCode.FAILED_BOARD_NOT_EXISTS.toString()+"id = " + id);
-            throw  new ApplicationException(AppResult.failed(ResultCode.FAILED_BOARD_NOT_EXISTS));
+        if (board == null) {
+            log.warn("{} id={}", ResultCode.FAILED_BOARD_NOT_EXISTS, id);
+            throw new ApplicationException(AppResult.failed(ResultCode.FAILED_BOARD_NOT_EXISTS));
         }
-
 
         return AppResult.success(board);
     }

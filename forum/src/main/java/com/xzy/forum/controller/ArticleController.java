@@ -12,7 +12,6 @@ import com.xzy.forum.utils.StringUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,11 +27,13 @@ import java.util.List;
 @RequestMapping({"/article", "/articles"})
 public class ArticleController {
 
-    @Autowired
-    private IBoardService boardService;
+    private final IBoardService boardService;
+    private final IArticleService articleService;
 
-    @Autowired
-    private IArticleService articleService;
+    public ArticleController(IBoardService boardService, IArticleService articleService) {
+        this.boardService = boardService;
+        this.articleService = articleService;
+    }
 
     @PostMapping("/create")
     public AppResult create(@RequestParam("boardId") Long boardId,

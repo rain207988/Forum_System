@@ -4,6 +4,7 @@ import com.xzy.forum.common.AppResult;
 import com.xzy.forum.common.ResultCode;
 import com.xzy.forum.config.ForumRateLimitProperties;
 import com.xzy.forum.exception.ApplicationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 @Service
 public class RateLimitService {
 
@@ -48,8 +50,8 @@ public class RateLimitService {
                     redisTemplate.expire(key, window);
                 }
                 return count == null || count <= maxRequests;
-            } catch (Exception ignored) {
-                // fallback to local limiter when redis is unavailable
+            } catch (Exception ex) {
+                log.warn("Redis 限流不可用，降级为本地限流，key={}, reason={}", key, ex.getMessage());
             }
         }
         return tryConsumeLocally(key, maxRequests, window);

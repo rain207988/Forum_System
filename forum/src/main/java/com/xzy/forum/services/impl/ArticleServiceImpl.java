@@ -12,7 +12,6 @@ import com.xzy.forum.services.IUserService;
 import com.xzy.forum.utils.ServiceValidationUtils;
 import com.xzy.forum.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -28,14 +27,15 @@ import static com.xzy.forum.utils.ServiceValidationUtils.requirePositiveId;
 @Service
 public class ArticleServiceImpl implements IArticleService {
 
-    @Autowired
-    private ArticleMapper articleMapper;
+    private final ArticleMapper articleMapper;
+    private final IUserService userService;
+    private final IBoardService boardService;
 
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private IBoardService boardService;
+    public ArticleServiceImpl(ArticleMapper articleMapper, IUserService userService, IBoardService boardService) {
+        this.articleMapper = articleMapper;
+        this.userService = userService;
+        this.boardService = boardService;
+    }
 
     @Override
     @Transactional
@@ -59,8 +59,8 @@ public class ArticleServiceImpl implements IArticleService {
             throw new ApplicationException(AppResult.failed(ResultCode.FAILED));
         }
 
-        userService.addOneArticleCountById(article.getUserId());
-        boardService.addOneArticleCount(article.getBoardId());
+        userService.incrementArticleCountById(article.getUserId());
+        boardService.incrementArticleCountById(article.getBoardId());
         log.info("{} , userId={}, boardId={}", ResultCode.SUCCESS, article.getUserId(), article.getBoardId());
     }
 
@@ -103,17 +103,13 @@ public class ArticleServiceImpl implements IArticleService {
             throw new ApplicationException(AppResult.failed(ResultCode.FAILED_ARTICLE_NOT_EXISTS));
         }
 
-        Article updateArticle = new Article();
-        updateArticle.setId(article.getId());
-        updateArticle.setVisitCount(article.getVisitCount() + 1);
-        updateArticle.setUpdateTime(new Date());
-        int row = articleMapper.updateByPrimaryKeySelective(updateArticle);
+        int row = articleMapper.incrementVisitCountById(article.getId());
         if (row != 1) {
             log.warn(ResultCode.ERROR_SERVICES.toString());
             throw new ApplicationException(AppResult.failed(ResultCode.ERROR_SERVICES));
         }
 
-        article.setVisitCount(updateArticle.getVisitCount());
+        article.setVisitCount(article.getVisitCount() + 1);
         return article;
     }
 
@@ -160,11 +156,7 @@ public class ArticleServiceImpl implements IArticleService {
             throw new ApplicationException(AppResult.failed(ResultCode.FAILED_ARTICLE_NOT_EXISTS));
         }
 
-        Article updateArticle = new Article();
-        updateArticle.setId(article.getId());
-        updateArticle.setLikeCount(article.getLikeCount() + 1);
-        updateArticle.setUpdateTime(new Date());
-        int row = articleMapper.updateByPrimaryKeySelective(updateArticle);
+        int row = articleMapper.incrementLikeCountById(article.getId());
         if (row != 1) {
             log.warn(ResultCode.ERROR_SERVICES.toString());
             throw new ApplicationException(AppResult.failed(ResultCode.ERROR_SERVICES));
@@ -192,8 +184,8 @@ public class ArticleServiceImpl implements IArticleService {
         int row = articleMapper.updateByPrimaryKeySelective(updateArticle);
         requireAffectedOneRow(row, ResultCode.ERROR_SERVICES, "删除帖子失败", id);
 
-        userService.subOneArticleCountById(article.getUserId());
-        boardService.subOneArticleCountById(article.getBoardId());
+        userService.decrementArticleCountById(article.getUserId());
+        boardService.decrementArticleCountById(article.getBoardId());
 
         log.info("帖子删除成功，articleId={}", id);
     }
@@ -201,7 +193,7 @@ public class ArticleServiceImpl implements IArticleService {
     @Override
     @CacheEvict(cacheNames = "articleLists", allEntries = true)
     public void addOneReplyCountById(Long id) {
-        requirePositiveId(id, ResultCode.ERROR_IS_NULL, "articleId");
+        requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "articleId");
 
         Article article = articleMapper.selectByPrimaryKey(id);
         if (article == null || article.getDeleteState() == 1) {
@@ -213,12 +205,7 @@ public class ArticleServiceImpl implements IArticleService {
             throw new ApplicationException(AppResult.failed(ResultCode.FAILED_ARTICLE_BANNED));
         }
 
-        Article updateArticle = new Article();
-        updateArticle.setId(article.getId());
-        updateArticle.setReplyCount(article.getReplyCount() + 1);
-        updateArticle.setUpdateTime(new Date());
-
-        int row = articleMapper.updateByPrimaryKeySelective(updateArticle);
+        int row = articleMapper.incrementReplyCountById(article.getId());
         requireAffectedOneRow(row, ResultCode.FAILED, "帖子回复数更新失败", article.getId());
     }
 

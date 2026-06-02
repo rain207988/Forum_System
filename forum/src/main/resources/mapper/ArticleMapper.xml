@@ -190,4 +190,22 @@
       updateTime = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <update id="incrementVisitCountById" parameterType="java.lang.Long">
+    update t_article
+    set visitCount = visitCount + 1,
+      updateTime = current_timestamp
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="incrementLikeCountById" parameterType="java.lang.Long">
+    update t_article
+    set likeCount = likeCount + 1,
+      updateTime = current_timestamp
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="incrementReplyCountById" parameterType="java.lang.Long">
+    update t_article
+    set replyCount = replyCount + 1,
+      updateTime = current_timestamp
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 </mapper>

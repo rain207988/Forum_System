@@ -8,7 +8,6 @@ import com.xzy.forum.model.ArticleReply;
 import com.xzy.forum.model.User;
 import com.xzy.forum.services.IArticleReplyService;
 import com.xzy.forum.services.IArticleService;
-import jakarta.annotation.Resource;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,11 +21,13 @@ import java.util.List;
 @RequestMapping("/reply")
 public class ArticleReplyController {
 
-    @Resource
-    private IArticleService articleService;
+    private final IArticleService articleService;
+    private final IArticleReplyService articleReplyService;
 
-    @Resource
-    private IArticleReplyService articleReplyService;
+    public ArticleReplyController(IArticleService articleService, IArticleReplyService articleReplyService) {
+        this.articleService = articleService;
+        this.articleReplyService = articleReplyService;
+    }
 
     @PostMapping("/create")
     public AppResult create(@RequestParam("articleId") @NonNull Long articleId,

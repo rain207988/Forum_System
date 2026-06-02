@@ -1,6 +1,5 @@
 package com.xzy.forum.interceptor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -9,13 +8,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class AppInterceptorConfigurer implements WebMvcConfigurer {
 
-    // 注入自定义的登录拦截器
-    @Autowired
-    private LoginInterceptor appInterceptor;
+    private final LoginInterceptor loginInterceptor;
+
+    public AppInterceptorConfigurer(LoginInterceptor loginInterceptor) {
+        this.loginInterceptor = loginInterceptor;
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(appInterceptor)
+        registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/user/**", "/article/**", "/articles/**", "/reply/**", "/message/**", "/board/**")
                 .excludePathPatterns("/user/login")     // 排除登录api接⼝
                 .excludePathPatterns("/user/refreshToken")

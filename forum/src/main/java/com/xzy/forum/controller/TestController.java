@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "测试接口", description = "用于系统测试和演示的 API 接口")
 @RequestMapping("/test")
 @RestController
-@ConditionalOnProperty(prefix = "forum.features", name = "test-api-enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "forum.features", name = "test-api-enabled", havingValue = "true")
 public class TestController {
 
 

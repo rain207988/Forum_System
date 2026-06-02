@@ -11,7 +11,7 @@ import com.xzy.forum.services.IUserService;
 import com.xzy.forum.utils.ServiceValidationUtils;
 import com.xzy.forum.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,14 +29,17 @@ public class MessageServiceImpl implements IMessageService {
     private static final byte STATE_READ = 1;
     private static final byte STATE_REPLIED = 2;
 
-    @Autowired
-    private MessageMapper messageMapper;
+    private final MessageMapper messageMapper;
+    private final IUserService userService;
+    private final CacheManager cacheManager;
 
-    @Autowired
-    private IUserService userService;
-
-    @Autowired(required = false)
-    private CacheManager cacheManager;
+    public MessageServiceImpl(MessageMapper messageMapper,
+                              IUserService userService,
+                              ObjectProvider<CacheManager> cacheManagerProvider) {
+        this.messageMapper = messageMapper;
+        this.userService = userService;
+        this.cacheManager = cacheManagerProvider.getIfAvailable();
+    }
 
     @Override
     @Transactional

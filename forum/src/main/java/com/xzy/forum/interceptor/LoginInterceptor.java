@@ -5,10 +5,12 @@ import com.xzy.forum.auth.JwtAuthenticationService;
 import com.xzy.forum.auth.TokenRevocationService;
 import com.xzy.forum.common.ResultCode;
 import com.xzy.forum.config.AppConfig;
+import com.xzy.forum.exception.ApplicationException;
 import com.xzy.forum.model.User;
 import com.xzy.forum.services.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -16,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 
-
+@Slf4j
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
 
@@ -44,22 +46,28 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (tokenRevocationService.isRevoked(token)) {
-            writeUnauthorized(response, "登录状态已失效，请重新登录");
+        try {
+            if (tokenRevocationService.isRevoked(token)) {
+                writeUnauthorized(response, "登录状态已失效，请重新登录");
+                return false;
+            }
+
+            Long userId = jwtAuthenticationService.parseUserId(token);
+            User user = userService.selectById(userId);
+            if (user == null) {
+                writeUnauthorized(response, "用户不存在或登录状态已失效");
+                return false;
+            }
+
+            jwtAuthenticationService.validateToken(token, user);
+            AuthContext.setCurrentUser(user);
+            request.setAttribute(AppConfig.AUTH_USER_REQUEST_ATTRIBUTE, user);
+            return true;
+        } catch (ApplicationException ex) {
+            log.info("登录态校验失败: {}", ex.getMessage());
+            writeUnauthorized(response, ex.getMessage());
             return false;
         }
-
-        Long userId = jwtAuthenticationService.parseUserId(token);
-        User user = userService.selectById(userId);
-        if (user == null) {
-            writeUnauthorized(response, "用户不存在或登录状态已失效");
-            return false;
-        }
-
-        jwtAuthenticationService.validateToken(token, user);
-        AuthContext.setCurrentUser(user);
-        request.setAttribute(AppConfig.AUTH_USER_REQUEST_ATTRIBUTE, user);
-        return true;
     }
 
     @Override
@@ -80,6 +88,5 @@ public class LoginInterceptor implements HandlerInterceptor {
         response.getWriter().write("{\"code\":" + ResultCode.FAILED_UNAUTHORIZED.getCode()
                 + ",\"message\":\"" + escapedMessage + "\",\"data\":null}");
         response.getWriter().flush();
-
     }
 }

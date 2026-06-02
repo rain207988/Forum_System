@@ -15,7 +15,7 @@ public interface IBoardService {
 
     List<Board> selectAllNormal();
 
-    void addOneArticleCount(Long boardId);
+    void incrementArticleCountById(Long boardId);
 
     Board selectById(Long id);
 
@@ -24,5 +24,5 @@ public interface IBoardService {
      * 板块文章减1
      * @param id
      */
-    void subOneArticleCountById(Long id);
+    void decrementArticleCountById(Long id);
 }

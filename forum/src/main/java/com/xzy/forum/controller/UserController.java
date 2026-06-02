@@ -21,7 +21,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,23 +34,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private IUserService userService;
+    private final IUserService userService;
+    private final JwtAuthenticationService jwtAuthenticationService;
+    private final TokenRevocationService tokenRevocationService;
+    private final RefreshTokenSessionService refreshTokenSessionService;
+    private final RateLimitService rateLimitService;
+    private final ForumRateLimitProperties rateLimitProperties;
 
-    @Autowired
-    private JwtAuthenticationService jwtAuthenticationService;
-
-    @Autowired
-    private TokenRevocationService tokenRevocationService;
-
-    @Autowired
-    private RefreshTokenSessionService refreshTokenSessionService;
-
-    @Autowired
-    private RateLimitService rateLimitService;
-
-    @Autowired
-    private ForumRateLimitProperties rateLimitProperties;
+    public UserController(IUserService userService,
+                          JwtAuthenticationService jwtAuthenticationService,
+                          TokenRevocationService tokenRevocationService,
+                          RefreshTokenSessionService refreshTokenSessionService,
+                          RateLimitService rateLimitService,
+                          ForumRateLimitProperties rateLimitProperties) {
+        this.userService = userService;
+        this.jwtAuthenticationService = jwtAuthenticationService;
+        this.tokenRevocationService = tokenRevocationService;
+        this.refreshTokenSessionService = refreshTokenSessionService;
+        this.rateLimitService = rateLimitService;
+        this.rateLimitProperties = rateLimitProperties;
+    }
 
     @Operation(summary = "用户注册", description = "注册新用户，需要提供用户名、昵称、密码和确认密码")
     @ApiResponses(value = {
@@ -89,7 +91,7 @@ public class UserController {
         user.setUsername(username.trim());
         user.setNickname(nickname.trim());
         user.setPassword(password);
-        userService.createnormalUser(user);
+        userService.createNormalUser(user);
         return AppResult.success("注册成功", null);
     }
 

@@ -1,5 +1,6 @@
 package com.xzy.forum.auth;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -10,6 +11,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 public class RefreshTokenSessionService {
 
@@ -38,8 +40,8 @@ public class RefreshTokenSessionService {
             try {
                 redisTemplate.opsForValue().set(sessionKey, tokenHash, ttl);
                 return;
-            } catch (Exception ignored) {
-                // fallback to local session store when redis is unavailable
+            } catch (Exception ex) {
+                log.warn("Redis refresh token 会话写入失败，降级为本地会话，key={}, reason={}", sessionKey, ex.getMessage());
             }
         }
 
@@ -57,8 +59,8 @@ public class RefreshTokenSessionService {
             try {
                 Object value = redisTemplate.opsForValue().get(sessionKey);
                 return expectedHash.equals(value);
-            } catch (Exception ignored) {
-                // fallback to local session store when redis is unavailable
+            } catch (Exception ex) {
+                log.warn("Redis refresh token 会话读取失败，降级为本地会话，key={}, reason={}", sessionKey, ex.getMessage());
             }
         }
 
@@ -83,8 +85,8 @@ public class RefreshTokenSessionService {
             try {
                 redisTemplate.delete(sessionKey);
                 return;
-            } catch (Exception ignored) {
-                // fallback to local session store when redis is unavailable
+            } catch (Exception ex) {
+                log.warn("Redis refresh token 会话删除失败，降级为本地会话，key={}, reason={}", sessionKey, ex.getMessage());
             }
         }
 

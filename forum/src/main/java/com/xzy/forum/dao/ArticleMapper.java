@@ -43,4 +43,10 @@ public interface ArticleMapper {
     List<Article> selectAllByBoardId(@Param("boardId") Long boardId, @Param("keyword") String keyword);
 
     List<Article> selectAllByUserId(Long userId);
+
+    int incrementVisitCountById(Long id);
+
+    int incrementLikeCountById(Long id);
+
+    int incrementReplyCountById(Long id);
 }

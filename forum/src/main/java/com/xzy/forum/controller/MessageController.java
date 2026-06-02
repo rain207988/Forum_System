@@ -9,7 +9,6 @@ import com.xzy.forum.service.RateLimitService;
 import com.xzy.forum.services.IMessageService;
 import com.xzy.forum.utils.ClientIpUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,14 +21,17 @@ import java.util.List;
 @RequestMapping("/message")
 public class MessageController {
 
-    @Autowired
-    private IMessageService messageService;
+    private final IMessageService messageService;
+    private final RateLimitService rateLimitService;
+    private final ForumRateLimitProperties rateLimitProperties;
 
-    @Autowired
-    private RateLimitService rateLimitService;
-
-    @Autowired
-    private ForumRateLimitProperties rateLimitProperties;
+    public MessageController(IMessageService messageService,
+                             RateLimitService rateLimitService,
+                             ForumRateLimitProperties rateLimitProperties) {
+        this.messageService = messageService;
+        this.rateLimitService = rateLimitService;
+        this.rateLimitProperties = rateLimitProperties;
+    }
 
     @PostMapping("/send")
     public AppResult send(HttpServletRequest request,

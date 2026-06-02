@@ -12,5 +12,5 @@ import org.springframework.stereotype.Component;
 public class ForumFeatureProperties {
 
     private boolean swaggerEnabled = true;
-    private boolean testApiEnabled = true;
+    private boolean testApiEnabled = false;
 }

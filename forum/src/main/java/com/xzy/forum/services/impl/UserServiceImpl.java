@@ -10,7 +10,6 @@ import com.xzy.forum.utils.PasswordUtils;
 import com.xzy.forum.utils.ServiceValidationUtils;
 import com.xzy.forum.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -24,11 +23,14 @@ import java.util.Objects;
 @Service
 public class UserServiceImpl implements IUserService {
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
+
+    public UserServiceImpl(UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
 
     @Override
-    public void createnormalUser(User user) {
+    public void createNormalUser(User user) {
         if (user == null) {
             throw new ApplicationException(AppResult.failed(ResultCode.ERROR_IS_NULL.getCode(), "用户信息不能为空"));
         }
@@ -160,7 +162,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void addOneArticleCountById(Long id) {
+    public void incrementArticleCountById(Long id) {
         ServiceValidationUtils.requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "userId");
         ServiceValidationUtils.requireNonNull(userMapper.selectByPrimaryKey(id), ResultCode.ERROR_IS_NULL, "userId", id);
 
@@ -169,7 +171,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void subOneArticleCountById(Long id) {
+    public void decrementArticleCountById(Long id) {
         ServiceValidationUtils.requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "userId");
         ServiceValidationUtils.requireNonNull(userMapper.selectByPrimaryKey(id), ResultCode.ERROR_IS_NULL, "userId", id);
 

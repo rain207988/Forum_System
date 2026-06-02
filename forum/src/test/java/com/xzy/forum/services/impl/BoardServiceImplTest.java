@@ -36,7 +36,7 @@ class BoardServiceImplTest {
 
     @Test
     void shouldIncreaseBoardArticleCount() {
-        boardService.addOneArticleCount(3L);
+        boardService.incrementArticleCountById(3L);
         Board board = boardService.selectById(3L);
         assertThat(board.getArticleCount()).isEqualTo(1);
     }
