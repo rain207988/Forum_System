@@ -19,6 +19,9 @@ mybatis:
 forum:
   index:
     board_num: 9
+  features:
+    swagger-enabled: false
+    test-api-enabled: true
 
 logging:
   level:

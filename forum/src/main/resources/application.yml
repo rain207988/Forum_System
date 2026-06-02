@@ -26,26 +26,24 @@ spring:
       - messageUnreadCounts
     caffeine:
       spec: maximumSize=200,expireAfterWrite=10m
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 server:
   port: 58080
+  shutdown: graceful
+  forward-headers-strategy: framework
+  compression:
+    enabled: true
+    mime-types: application/json,text/html,text/xml,text/plain,text/css,application/javascript
+    min-response-size: 2KB
+
+  error:
+    include-message: never
 
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml # MyBatis 映射文件位置（包括子目录）
 
-
-
-logging:
-  pattern:
-    dateformat:
-      default: yyyy-MM-dd HH:mm:ss # 定义默认的日期时间格式
-  file:
-    path: ./logs  #⽇志保存⽬录
-  level:
-    root: INFO # 全局日志级别
-    com.xzy.forum: DEBUG # 指定包的日志级别
-
-# SpringDoc OpenAPI (Swagger) 配置
 springdoc:
   api-docs:
     enabled: true
@@ -59,16 +57,53 @@ springdoc:
   default-flat-param-object: true
   packages-to-scan: com.xzy.forum.controller
 
+logging:
+  pattern:
+    dateformat:
+      default: yyyy-MM-dd HH:mm:ss # 定义默认的日期时间格式
+  file:
+    path: ./logs  #⽇志保存⽬录
+  level:
+    root: INFO # 全局日志级别
+    com.xzy.forum: DEBUG # 指定包的日志级别
+
 # 项⽬⾃定义相关配置
 forum:
   index:
     board_num: 9 # 首页显示的板块数量
+  features:
+    swagger-enabled: true
+    test-api-enabled: true
   jwt:
     secret: ${FORUM_JWT_SECRET:forum-jwt-secret-please-change-in-production-2026}
     expire-hours: ${FORUM_JWT_EXPIRE_HOURS:12}
     issuer: ${FORUM_JWT_ISSUER:forum-system}
     header: Authorization
     prefix: "Bearer "
+  cors:
+    allowed-origin-patterns: ${FORUM_CORS_ALLOWED_ORIGIN_PATTERNS:http://localhost:*,http://127.0.0.1:*}
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"
+    exposed-headers: Authorization
+    allow-credentials: true
+    max-age: 3600
+  security:
+    headers-enabled: true
+    content-security-policy: "${FORUM_SECURITY_CSP:default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'}"
+  rate-limit:
+    enabled: ${FORUM_RATE_LIMIT_ENABLED:true}
+    login:
+      max-requests: ${FORUM_RATE_LIMIT_LOGIN_MAX_REQUESTS:10}
+      window-seconds: ${FORUM_RATE_LIMIT_LOGIN_WINDOW_SECONDS:60}
+    register:
+      max-requests: ${FORUM_RATE_LIMIT_REGISTER_MAX_REQUESTS:5}
+      window-seconds: ${FORUM_RATE_LIMIT_REGISTER_WINDOW_SECONDS:3600}
+    message-send:
+      max-requests: ${FORUM_RATE_LIMIT_MESSAGE_SEND_MAX_REQUESTS:20}
+      window-seconds: ${FORUM_RATE_LIMIT_MESSAGE_SEND_WINDOW_SECONDS:60}
+    message-reply:
+      max-requests: ${FORUM_RATE_LIMIT_MESSAGE_REPLY_MAX_REQUESTS:30}
+      window-seconds: ${FORUM_RATE_LIMIT_MESSAGE_REPLY_WINDOW_SECONDS:60}
 
 management:
   endpoints:

@@ -4,7 +4,11 @@ import com.xzy.forum.common.AppResult;
 import com.xzy.forum.auth.AuthContext;
 import com.xzy.forum.model.Message;
 import com.xzy.forum.model.User;
+import com.xzy.forum.config.ForumRateLimitProperties;
+import com.xzy.forum.service.RateLimitService;
 import com.xzy.forum.services.IMessageService;
+import com.xzy.forum.utils.ClientIpUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,18 +25,36 @@ public class MessageController {
     @Autowired
     private IMessageService messageService;
 
+    @Autowired
+    private RateLimitService rateLimitService;
+
+    @Autowired
+    private ForumRateLimitProperties rateLimitProperties;
+
     @PostMapping("/send")
-    public AppResult send(@RequestParam("receiveUserId") Long receiveUserId,
+    public AppResult send(HttpServletRequest request,
+                          @RequestParam("receiveUserId") Long receiveUserId,
                           @RequestParam("content") String content) {
         User currentUser = requireLoginUser();
+        rateLimitService.check(
+                rateLimitProperties.getMessageSend(),
+                "forum:rate-limit:message-send:user:" + currentUser.getId() + ":ip:" + ClientIpUtils.resolveClientIp(request),
+                "发送站内信过于频繁，请稍后再试"
+        );
         messageService.send(currentUser.getId(), receiveUserId, content);
         return AppResult.success("发送成功", null);
     }
 
     @PostMapping("/reply")
-    public AppResult reply(@RequestParam("repliedId") Long repliedId,
+    public AppResult reply(HttpServletRequest request,
+                           @RequestParam("repliedId") Long repliedId,
                            @RequestParam("content") String content) {
         User currentUser = requireLoginUser();
+        rateLimitService.check(
+                rateLimitProperties.getMessageReply(),
+                "forum:rate-limit:message-reply:user:" + currentUser.getId() + ":ip:" + ClientIpUtils.resolveClientIp(request),
+                "回复站内信过于频繁，请稍后再试"
+        );
         messageService.reply(currentUser.getId(), repliedId, content);
         return AppResult.success("回复成功", null);
     }

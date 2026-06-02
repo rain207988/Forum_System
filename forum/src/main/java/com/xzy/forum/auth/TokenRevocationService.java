@@ -34,8 +34,12 @@ public class TokenRevocationService {
         }
 
         if (redisTemplate != null) {
-            redisTemplate.opsForValue().set(tokenKey, Boolean.TRUE, ttl);
-            return;
+            try {
+                redisTemplate.opsForValue().set(tokenKey, Boolean.TRUE, ttl);
+                return;
+            } catch (Exception ignored) {
+                // fallback to local blacklist when redis is unavailable
+            }
         }
 
         localBlacklist.put(tokenKey, expiresAt);
@@ -48,7 +52,11 @@ public class TokenRevocationService {
 
         String tokenKey = buildTokenKey(token);
         if (redisTemplate != null) {
-            return Boolean.TRUE.equals(redisTemplate.hasKey(tokenKey));
+            try {
+                return Boolean.TRUE.equals(redisTemplate.hasKey(tokenKey));
+            } catch (Exception ignored) {
+                // fallback to local blacklist when redis is unavailable
+            }
         }
 
         Instant expiresAt = localBlacklist.get(tokenKey);

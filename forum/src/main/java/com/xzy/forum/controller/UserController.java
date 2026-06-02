@@ -5,15 +5,19 @@ import com.xzy.forum.common.ResultCode;
 import com.xzy.forum.auth.AuthContext;
 import com.xzy.forum.auth.JwtAuthenticationService;
 import com.xzy.forum.auth.TokenRevocationService;
+import com.xzy.forum.config.ForumRateLimitProperties;
 import com.xzy.forum.dto.AuthResponse;
 import com.xzy.forum.model.User;
+import com.xzy.forum.service.RateLimitService;
 import com.xzy.forum.services.IUserService;
+import com.xzy.forum.utils.ClientIpUtils;
 import com.xzy.forum.utils.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -38,6 +42,12 @@ public class UserController {
     @Autowired
     private TokenRevocationService tokenRevocationService;
 
+    @Autowired
+    private RateLimitService rateLimitService;
+
+    @Autowired
+    private ForumRateLimitProperties rateLimitProperties;
+
     @Operation(summary = "用户注册", description = "注册新用户，需要提供用户名、昵称、密码和确认密码")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "注册成功"),
@@ -46,6 +56,7 @@ public class UserController {
     })
     @PostMapping("/register")
     public AppResult register(
+            HttpServletRequest request,
             @Parameter(description = "用户名", required = true, example = "zhangsan")
             @RequestParam String username,
             @Parameter(description = "用户昵称", required = true, example = "张三")
@@ -54,6 +65,11 @@ public class UserController {
             @RequestParam String password,
             @Parameter(description = "确认密码", required = true, example = "123456")
             @RequestParam String passwordRepeat) {
+        rateLimitService.check(
+                rateLimitProperties.getRegister(),
+                "forum:rate-limit:register:" + ClientIpUtils.resolveClientIp(request),
+                "注册请求过于频繁，请稍后再试"
+        );
 
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(nickname) || StringUtils.isEmpty(password)) {
             log.info(ResultCode.FAILED_PARAMS_VALIDATE.toString());
@@ -81,8 +97,14 @@ public class UserController {
     })
     @PostMapping("/login")
     public AppResult<AuthResponse> login(
+            HttpServletRequest request,
             @Parameter(description = "用户名", required = true) @RequestParam("username") String username,
             @Parameter(description = "密码", required = true) @RequestParam("password") String password) {
+        rateLimitService.check(
+                rateLimitProperties.getLogin(),
+                "forum:rate-limit:login:" + ClientIpUtils.resolveClientIp(request),
+                "登录请求过于频繁，请稍后再试"
+        );
         User user = userService.login(username, password);
         String token = jwtAuthenticationService.generateToken(user);
         AuthResponse authResponse = new AuthResponse(

@@ -8,6 +8,7 @@ public enum ResultCode {
     FAILED_FORBIDDEN(1003, "禁止访问"),
     FAILED_CREATE(1004, "新增失败"),
     FAILED_NOT_EXISTS(1005, "资源不存在"),
+    FAILED_RATE_LIMITED(1006, "请求过于频繁，请稍后再试"),
 
     FAILED_USER_EXISTS(1101, "用户已存在"),
     FAILED_USER_NOT_EXISTS(1102, "用户不存在"),

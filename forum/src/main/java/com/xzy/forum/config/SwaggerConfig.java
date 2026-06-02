@@ -9,6 +9,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
+@ConditionalOnProperty(prefix = "forum.features", name = "swagger-enabled", havingValue = "true", matchIfMissing = true)
 public class SwaggerConfig {
 
     @Value("${server.port:8080}")

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "测试接口", description = "用于系统测试和演示的 API 接口")
 @RequestMapping("/test")
 @RestController
+@ConditionalOnProperty(prefix = "forum.features", name = "test-api-enabled", havingValue = "true", matchIfMissing = true)
 public class TestController {
 
 
