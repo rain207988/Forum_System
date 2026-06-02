@@ -13,6 +13,11 @@ const FORUM_REFRESH_SKEW_MS = 60 * 1000;
 
 let forumRefreshPromise = null;
 let forumRedirectingToLogin = false;
+let forumMessageSocket = null;
+let forumMessageSocketConnecting = false;
+let forumMessageSocketReconnectTimer = null;
+let forumMessageSocketManualClose = false;
+const forumRealtimeHandlers = [];
 
 function getForumToken() {
   return window.localStorage.getItem(FORUM_TOKEN_KEY);
@@ -43,6 +48,7 @@ function storeForumAuth(authData) {
   if (!authData || !authData.token) {
     return;
   }
+  const previousToken = getForumToken();
   window.localStorage.setItem(FORUM_TOKEN_KEY, authData.token);
   if (authData.refreshToken) {
     window.localStorage.setItem(FORUM_REFRESH_TOKEN_KEY, authData.refreshToken);
@@ -54,9 +60,14 @@ function storeForumAuth(authData) {
   if (authData.refreshExpiresAt) {
     window.localStorage.setItem(FORUM_REFRESH_TOKEN_EXPIRES_AT_KEY, String(authData.refreshExpiresAt));
   }
+  if (!isAuthPage() && previousToken && previousToken !== authData.token) {
+    closeForumMessageSocket();
+    connectForumMessageSocket();
+  }
 }
 
 function clearForumAuth() {
+  closeForumMessageSocket();
   window.localStorage.removeItem(FORUM_TOKEN_KEY);
   window.localStorage.removeItem(FORUM_REFRESH_TOKEN_KEY);
   window.localStorage.removeItem(FORUM_TOKEN_TYPE_KEY);
@@ -91,6 +102,130 @@ function parseForumTime(rawValue) {
   }
   const parsed = Date.parse(rawValue);
   return Number.isNaN(parsed) ? null : parsed;
+}
+
+function buildForumWebSocketUrl(path) {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return protocol + '//' + window.location.host + path;
+}
+
+function emitForumRealtimeEvent(event) {
+  forumRealtimeHandlers.forEach(function(handler) {
+    try {
+      handler(event);
+    } catch (error) {
+      console.warn('forum realtime handler failed', error);
+    }
+  });
+}
+
+function onForumRealtimeEvent(handler) {
+  if (typeof handler !== 'function') {
+    return function noop() {};
+  }
+  forumRealtimeHandlers.push(handler);
+  return function unsubscribe() {
+    const index = forumRealtimeHandlers.indexOf(handler);
+    if (index >= 0) {
+      forumRealtimeHandlers.splice(index, 1);
+    }
+  };
+}
+
+function closeForumMessageSocket() {
+  forumMessageSocketManualClose = true;
+  if (forumMessageSocketReconnectTimer) {
+    window.clearTimeout(forumMessageSocketReconnectTimer);
+    forumMessageSocketReconnectTimer = null;
+  }
+  if (forumMessageSocket) {
+    forumMessageSocket.close();
+    forumMessageSocket = null;
+  }
+  forumMessageSocketConnecting = false;
+}
+
+function scheduleForumMessageSocketReconnect() {
+  if (forumMessageSocketManualClose || forumRedirectingToLogin || isAuthPage()) {
+    return;
+  }
+  if (forumMessageSocketReconnectTimer) {
+    return;
+  }
+  forumMessageSocketReconnectTimer = window.setTimeout(function() {
+    forumMessageSocketReconnectTimer = null;
+    if (hasUsableRefreshToken()) {
+      refreshForumAuth()
+        .done(function() {
+          connectForumMessageSocket();
+        })
+        .fail(function() {
+          redirectToLogin();
+        });
+      return;
+    }
+    connectForumMessageSocket();
+  }, 3000);
+}
+
+function connectForumMessageSocket() {
+  if (isAuthPage()) {
+    return;
+  }
+  if (forumMessageSocketConnecting) {
+    return;
+  }
+  if (forumMessageSocket && (forumMessageSocket.readyState === WebSocket.OPEN || forumMessageSocket.readyState === WebSocket.CONNECTING)) {
+    return;
+  }
+
+  const token = getForumToken();
+  if (!token) {
+    if (hasUsableRefreshToken()) {
+      refreshForumAuth().done(function() {
+        connectForumMessageSocket();
+      }).fail(function() {
+        redirectToLogin();
+      });
+    }
+    return;
+  }
+
+  forumMessageSocketManualClose = false;
+  forumMessageSocketConnecting = true;
+  const socketUrl = buildForumWebSocketUrl('/ws/messages?token=' + encodeURIComponent(token));
+  const socket = new WebSocket(socketUrl);
+  forumMessageSocket = socket;
+
+  socket.onopen = function() {
+    forumMessageSocketConnecting = false;
+    if (forumMessageSocketReconnectTimer) {
+      window.clearTimeout(forumMessageSocketReconnectTimer);
+      forumMessageSocketReconnectTimer = null;
+    }
+  };
+
+  socket.onmessage = function(event) {
+    try {
+      emitForumRealtimeEvent(JSON.parse(event.data));
+    } catch (error) {
+      console.warn('failed to parse realtime message event', error);
+    }
+  };
+
+  socket.onerror = function() {
+    // reconnect is driven by onclose to avoid duplicate retries
+  };
+
+  socket.onclose = function() {
+    forumMessageSocketConnecting = false;
+    if (forumMessageSocket === socket) {
+      forumMessageSocket = null;
+    }
+    if (!forumMessageSocketManualClose) {
+      scheduleForumMessageSocketReconnect();
+    }
+  };
 }
 
 function hasUsableRefreshToken() {

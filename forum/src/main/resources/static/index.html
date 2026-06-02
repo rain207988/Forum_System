@@ -414,7 +414,6 @@
         let boardItem = $(itemHtml);
         // 把版块信息绑定到当前导航单元
         boardItem.data('board', board);
-        console.log('data = ' + boardItem.data('board').name + ', id = ' + boardItem.data('board').id);
         // 处理点击事件
         boardItem.click(function () {
           // alert('data = ' + boardItem.data('board').name + ', id = ' + boardItem.data('board').id);
@@ -635,6 +634,25 @@
     }
     // 方法调用
     requestMessageList();
+
+    let unsubscribeForumRealtimeMessages = onForumRealtimeEvent(function (event) {
+      if (!event || !event.type) {
+        return;
+      }
+      if (event.type === 'message-created' || event.type === 'message-inbox-refresh') {
+        requestMessageUnreadCount();
+        requestMessageList();
+      }
+      if (event.type === 'message-created') {
+        $.toast({
+          heading: '新站内信',
+          text: '你收到了一条新的站内信',
+          icon: 'info'
+        });
+      }
+    });
+
+    connectForumMessageSocket();
     
 
     // ============ 处理站内信列表页面 ============

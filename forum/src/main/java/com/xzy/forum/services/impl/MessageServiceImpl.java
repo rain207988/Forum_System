@@ -10,6 +10,7 @@ import com.xzy.forum.services.IMessageService;
 import com.xzy.forum.services.IUserService;
 import com.xzy.forum.utils.ServiceValidationUtils;
 import com.xzy.forum.utils.StringUtils;
+import com.xzy.forum.websocket.MessageRealtimeNotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cache.Cache;
@@ -32,13 +33,16 @@ public class MessageServiceImpl implements IMessageService {
     private final MessageMapper messageMapper;
     private final IUserService userService;
     private final CacheManager cacheManager;
+    private final MessageRealtimeNotificationService messageRealtimeNotificationService;
 
     public MessageServiceImpl(MessageMapper messageMapper,
                               IUserService userService,
-                              ObjectProvider<CacheManager> cacheManagerProvider) {
+                              ObjectProvider<CacheManager> cacheManagerProvider,
+                              MessageRealtimeNotificationService messageRealtimeNotificationService) {
         this.messageMapper = messageMapper;
         this.userService = userService;
         this.cacheManager = cacheManagerProvider.getIfAvailable();
+        this.messageRealtimeNotificationService = messageRealtimeNotificationService;
     }
 
     @Override
@@ -63,6 +67,7 @@ public class MessageServiceImpl implements IMessageService {
         int row = messageMapper.insertSelective(message);
         ServiceValidationUtils.requireAffectedOneRow(row, ResultCode.FAILED_CREATE, "发送站内信失败", receiveUserId);
         evictUnreadCountCache(receiveUserId);
+        messageRealtimeNotificationService.notifyMessageCreatedAfterCommit(receiveUserId, "send");
     }
 
     @Override
@@ -88,6 +93,7 @@ public class MessageServiceImpl implements IMessageService {
 
         send(currentUserId, originalMessage.getPostUserId(), content);
         evictUnreadCountCache(currentUserId);
+        messageRealtimeNotificationService.notifyInboxRefreshAfterCommit(currentUserId, "reply");
     }
 
     @Override
@@ -120,6 +126,7 @@ public class MessageServiceImpl implements IMessageService {
         int row = messageMapper.markRead(messageId, currentUserId);
         ServiceValidationUtils.requireAffectedOneRow(row, ResultCode.FAILED, "标记站内信已读失败", messageId);
         evictUnreadCountCache(currentUserId);
+        messageRealtimeNotificationService.notifyInboxRefreshAfterCommit(currentUserId, "mark-read");
     }
 
     private Message buildMessage(Long postUserId, Long receiveUserId, String content) {
