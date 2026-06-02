@@ -18,6 +18,7 @@ public class AppInterceptorConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(appInterceptor)
                 .addPathPatterns("/user/**", "/article/**", "/articles/**", "/reply/**", "/message/**", "/board/**")
                 .excludePathPatterns("/user/login")     // 排除登录api接⼝
+                .excludePathPatterns("/user/refreshToken")
                 .excludePathPatterns("/user/register")  // 排除注册api接⼝
                 .excludePathPatterns("/user/logout")    // 排除退出api接⼝
                 .excludePathPatterns("/swagger*/**")

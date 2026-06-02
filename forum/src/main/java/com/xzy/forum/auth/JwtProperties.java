@@ -10,7 +10,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JwtProperties {
 
     private String secret = "replace-this-with-env-secret-for-production";
-    private long expireHours = 12;
+    private long expireHours = 2;
+    private long refreshExpireDays = 7;
     private String issuer = "forum-system";
     private String header = "Authorization";
     private String prefix = "Bearer ";

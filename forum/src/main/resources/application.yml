@@ -76,7 +76,8 @@ forum:
     test-api-enabled: true
   jwt:
     secret: ${FORUM_JWT_SECRET:forum-jwt-secret-please-change-in-production-2026}
-    expire-hours: ${FORUM_JWT_EXPIRE_HOURS:12}
+    expire-hours: ${FORUM_JWT_EXPIRE_HOURS:2}
+    refresh-expire-days: ${FORUM_JWT_REFRESH_EXPIRE_DAYS:7}
     issuer: ${FORUM_JWT_ISSUER:forum-system}
     header: Authorization
     prefix: "Bearer "

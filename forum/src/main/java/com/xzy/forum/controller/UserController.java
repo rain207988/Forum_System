@@ -4,9 +4,11 @@ import com.xzy.forum.common.AppResult;
 import com.xzy.forum.common.ResultCode;
 import com.xzy.forum.auth.AuthContext;
 import com.xzy.forum.auth.JwtAuthenticationService;
+import com.xzy.forum.auth.RefreshTokenSessionService;
 import com.xzy.forum.auth.TokenRevocationService;
 import com.xzy.forum.config.ForumRateLimitProperties;
 import com.xzy.forum.dto.AuthResponse;
+import com.xzy.forum.exception.ApplicationException;
 import com.xzy.forum.model.User;
 import com.xzy.forum.service.RateLimitService;
 import com.xzy.forum.services.IUserService;
@@ -41,6 +43,9 @@ public class UserController {
 
     @Autowired
     private TokenRevocationService tokenRevocationService;
+
+    @Autowired
+    private RefreshTokenSessionService refreshTokenSessionService;
 
     @Autowired
     private RateLimitService rateLimitService;
@@ -106,23 +111,57 @@ public class UserController {
                 "登录请求过于频繁，请稍后再试"
         );
         User user = userService.login(username, password);
-        String token = jwtAuthenticationService.generateToken(user);
-        AuthResponse authResponse = new AuthResponse(
-                user,
-                token,
-                jwtAuthenticationService.getTokenPrefix().trim(),
-                jwtAuthenticationService.getExpiresAt(token)
+        JwtAuthenticationService.AuthTokenPair tokenPair = jwtAuthenticationService.issueTokenPair(user);
+        refreshTokenSessionService.store(
+                user.getId(),
+                tokenPair.refreshSessionId(),
+                tokenPair.refreshToken(),
+                tokenPair.refreshExpiresAt()
         );
+        AuthResponse authResponse = buildAuthResponse(user, tokenPair);
         return AppResult.success("登录成功", authResponse);
+    }
+
+    @PostMapping("/refreshToken")
+    @Operation(summary = "刷新访问令牌", description = "使用 refresh token 刷新 access token，并轮换 refresh token")
+    public AppResult<AuthResponse> refreshToken(
+            @Parameter(description = "refresh token", required = true)
+            @RequestParam("refreshToken") String refreshToken) {
+        if (StringUtils.isEmpty(refreshToken)) {
+            return AppResult.failed(ResultCode.FAILED_PARAMS_VALIDATE.getCode(), "refreshToken 不能为空");
+        }
+
+        Long userId = jwtAuthenticationService.parseRefreshUserId(refreshToken);
+        User user = userService.selectById(userId);
+        if (user == null) {
+            throw unauthorized("用户不存在或登录状态已失效");
+        }
+
+        jwtAuthenticationService.validateRefreshToken(refreshToken, user);
+        String refreshSessionId = jwtAuthenticationService.getRefreshSessionId(refreshToken);
+        if (!refreshTokenSessionService.matches(userId, refreshSessionId, refreshToken)) {
+            throw unauthorized("刷新凭证已失效，请重新登录");
+        }
+
+        JwtAuthenticationService.AuthTokenPair tokenPair = jwtAuthenticationService.refreshTokenPair(user, refreshToken);
+        refreshTokenSessionService.store(
+                userId,
+                refreshSessionId,
+                tokenPair.refreshToken(),
+                tokenPair.refreshExpiresAt()
+        );
+        return AppResult.success("刷新成功", buildAuthResponse(user, tokenPair));
     }
 
     @RequestMapping("/logout")
     @Operation(summary = "用户登出", description = "用户登出系统")
-    public AppResult logout(@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+    public AppResult logout(@RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+                            @RequestParam(value = "refreshToken", required = false) String refreshToken) {
         String token = jwtAuthenticationService.resolveToken(authorizationHeader);
         if (token != null) {
             tokenRevocationService.revoke(token, jwtAuthenticationService.getExpiresAt(token));
         }
+        revokeRefreshSession(refreshToken);
         log.info("用户登出成功");
         return AppResult.success("退出成功", null);
     }
@@ -166,13 +205,46 @@ public class UserController {
     @PostMapping("/modifyPwd")
     public AppResult modifyPwd(@RequestParam("oldPassword") String oldPassword,
                                @RequestParam("newPassword") String newPassword,
-                               @RequestParam("passwordRepeat") String passwordRepeat) {
+                               @RequestParam("passwordRepeat") String passwordRepeat,
+                               @RequestParam(value = "refreshToken", required = false) String refreshToken) {
         User currentUser = requireLoginUser();
         userService.changePassword(currentUser.getId(), oldPassword, newPassword, passwordRepeat);
+        revokeRefreshSession(refreshToken);
         return AppResult.success("密码修改成功，请重新登录", null);
     }
 
     private User requireLoginUser() {
         return AuthContext.requireCurrentUser();
+    }
+
+    private AuthResponse buildAuthResponse(User user, JwtAuthenticationService.AuthTokenPair tokenPair) {
+        return new AuthResponse(
+                user,
+                tokenPair.accessToken(),
+                jwtAuthenticationService.getTokenPrefix().trim(),
+                tokenPair.accessExpiresAt(),
+                tokenPair.refreshToken(),
+                tokenPair.refreshExpiresAt()
+        );
+    }
+
+    private void revokeRefreshSession(String refreshToken) {
+        if (StringUtils.isEmpty(refreshToken)) {
+            return;
+        }
+        try {
+            String refreshSessionId = jwtAuthenticationService.getRefreshSessionIdOrNull(refreshToken);
+            if (refreshSessionId == null) {
+                return;
+            }
+            Long refreshUserId = jwtAuthenticationService.parseRefreshUserId(refreshToken);
+            refreshTokenSessionService.revoke(refreshUserId, refreshSessionId);
+        } catch (Exception e) {
+            log.warn("撤销 refresh token 会话失败: {}", e.getMessage());
+        }
+    }
+
+    private ApplicationException unauthorized(String message) {
+        return new ApplicationException(AppResult.failed(ResultCode.FAILED_UNAUTHORIZED.getCode(), message));
     }
 }

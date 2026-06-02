@@ -13,4 +13,6 @@ public class AuthResponse {
     private String token;
     private String tokenType;
     private Instant expiresAt;
+    private String refreshToken;
+    private Instant refreshExpiresAt;
 }

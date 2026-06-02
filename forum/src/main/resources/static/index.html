@@ -468,6 +468,7 @@
       $.ajax({
         type : 'get',
         url : 'user/logout',
+        data : buildForumRefreshTokenPayload(),
         complete : function () {
           clearForumAuth();
           // 当前请求完成时，不论成功与失败都跳转到登录页面

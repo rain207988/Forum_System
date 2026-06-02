@@ -16,11 +16,18 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Objects;
+
+import static com.xzy.forum.utils.UUIDUtils.UUID_32;
 
 @Service
 public class JwtAuthenticationService {
 
     private static final String CLAIM_TOKEN_VERSION = "tokenVersion";
+    private static final String CLAIM_TOKEN_TYPE = "tokenType";
+    private static final String CLAIM_REFRESH_SESSION_ID = "refreshSessionId";
+    private static final String TOKEN_TYPE_ACCESS = "access";
+    private static final String TOKEN_TYPE_REFRESH = "refresh";
 
     private final JwtProperties jwtProperties;
     private final SecretKey secretKey;
@@ -33,18 +40,81 @@ public class JwtAuthenticationService {
     public String generateToken(User user) {
         Instant now = Instant.now();
         Instant expiresAt = now.plus(jwtProperties.getExpireHours(), ChronoUnit.HOURS);
-        return Jwts.builder()
+        return buildJwt(user, expiresAt, TOKEN_TYPE_ACCESS, null);
+    }
+
+    public RefreshTokenPayload generateRefreshToken(User user) {
+        Instant now = Instant.now();
+        Instant expiresAt = now.plus(jwtProperties.getRefreshExpireDays(), ChronoUnit.DAYS);
+        String sessionId = UUID_32();
+        String token = buildJwt(user, expiresAt, TOKEN_TYPE_REFRESH, sessionId);
+        return new RefreshTokenPayload(token, sessionId, expiresAt);
+    }
+
+    public RefreshTokenPayload rotateRefreshToken(User user, String currentRefreshToken) {
+        validateRefreshToken(currentRefreshToken, user);
+        Instant now = Instant.now();
+        Instant expiresAt = now.plus(jwtProperties.getRefreshExpireDays(), ChronoUnit.DAYS);
+        String sessionId = getRefreshSessionId(currentRefreshToken);
+        String token = buildJwt(user, expiresAt, TOKEN_TYPE_REFRESH, sessionId);
+        return new RefreshTokenPayload(token, sessionId, expiresAt);
+    }
+
+    public void validateRefreshToken(String token, User user) {
+        Claims claims = parseClaims(token);
+        validateTokenType(claims, TOKEN_TYPE_REFRESH);
+        String tokenVersion = claims.get(CLAIM_TOKEN_VERSION, String.class);
+        if (!buildTokenVersion(user).equals(tokenVersion)) {
+            throw unauthorized("登录状态已失效，请重新登录");
+        }
+        if (getRefreshSessionId(claims) == null) {
+            throw unauthorized("刷新凭证无效，请重新登录");
+        }
+    }
+
+    public String getRefreshSessionId(String refreshToken) {
+        return getRefreshSessionId(parseClaims(refreshToken));
+    }
+
+    public String getRefreshSessionIdOrNull(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return null;
+        }
+        try {
+            return getRefreshSessionId(refreshToken);
+        } catch (ApplicationException e) {
+            return null;
+        }
+    }
+
+    private String buildJwt(User user, Instant expiresAt, String tokenType, String refreshSessionId) {
+        var builder = Jwts.builder()
+                .id(UUID_32())
                 .subject(String.valueOf(user.getId()))
                 .issuer(jwtProperties.getIssuer())
-                .issuedAt(Date.from(now))
+                .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(expiresAt))
                 .claim(CLAIM_TOKEN_VERSION, buildTokenVersion(user))
-                .signWith(secretKey)
-                .compact();
+                .claim(CLAIM_TOKEN_TYPE, tokenType);
+        if (refreshSessionId != null) {
+            builder.claim(CLAIM_REFRESH_SESSION_ID, refreshSessionId);
+        }
+        return builder.signWith(secretKey).compact();
     }
 
     public Long parseUserId(String token) {
         Claims claims = parseClaims(token);
+        validateTokenType(claims, TOKEN_TYPE_ACCESS);
+        return parseSubjectAsUserId(claims);
+    }
+
+    public Long parseRefreshUserId(String token) {
+        Claims claims = parseClaims(token);
+        validateTokenType(claims, TOKEN_TYPE_REFRESH);
+        return parseSubjectAsUserId(claims);
+    }
+
+    private Long parseSubjectAsUserId(Claims claims) {
         try {
             return Long.parseLong(claims.getSubject());
         } catch (NumberFormatException e) {
@@ -54,6 +124,7 @@ public class JwtAuthenticationService {
 
     public void validateToken(String token, User user) {
         Claims claims = parseClaims(token);
+        validateTokenType(claims, TOKEN_TYPE_ACCESS);
         String tokenVersion = claims.get(CLAIM_TOKEN_VERSION, String.class);
         if (!buildTokenVersion(user).equals(tokenVersion)) {
             throw unauthorized("登录状态已失效，请重新登录");
@@ -83,6 +154,18 @@ public class JwtAuthenticationService {
         return jwtProperties.getPrefix();
     }
 
+    public AuthTokenPair issueTokenPair(User user) {
+        String accessToken = generateToken(user);
+        RefreshTokenPayload refreshToken = generateRefreshToken(user);
+        return new AuthTokenPair(accessToken, getExpiresAt(accessToken), refreshToken.token(), refreshToken.sessionId(), refreshToken.expiresAt());
+    }
+
+    public AuthTokenPair refreshTokenPair(User user, String currentRefreshToken) {
+        String accessToken = generateToken(user);
+        RefreshTokenPayload refreshToken = rotateRefreshToken(user, currentRefreshToken);
+        return new AuthTokenPair(accessToken, getExpiresAt(accessToken), refreshToken.token(), refreshToken.sessionId(), refreshToken.expiresAt());
+    }
+
     private Claims parseClaims(String token) {
         try {
             return Jwts.parser()
@@ -95,11 +178,29 @@ public class JwtAuthenticationService {
         }
     }
 
+    private void validateTokenType(Claims claims, String expectedType) {
+        String actualType = claims.get(CLAIM_TOKEN_TYPE, String.class);
+        if (!Objects.equals(expectedType, actualType)) {
+            throw unauthorized("登录状态已失效，请重新登录");
+        }
+    }
+
+    private String getRefreshSessionId(Claims claims) {
+        String sessionId = claims.get(CLAIM_REFRESH_SESSION_ID, String.class);
+        return sessionId == null || sessionId.isBlank() ? null : sessionId;
+    }
+
     private String buildTokenVersion(User user) {
         return DigestUtils.sha256Hex(jwtProperties.getSecret() + ":" + user.getId() + ":" + user.getPassword());
     }
 
     private ApplicationException unauthorized(String message) {
         return new ApplicationException(AppResult.failed(ResultCode.FAILED_UNAUTHORIZED.getCode(), message));
+    }
+
+    public record RefreshTokenPayload(String token, String sessionId, Instant expiresAt) {
+    }
+
+    public record AuthTokenPair(String accessToken, Instant accessExpiresAt, String refreshToken, String refreshSessionId, Instant refreshExpiresAt) {
     }
 }
