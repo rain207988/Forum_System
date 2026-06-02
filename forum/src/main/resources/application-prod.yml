@@ -1,0 +1,41 @@
+spring:
+  cache:
+    type: redis
+    cache-names:
+      - boards
+      - users
+      - articleLists
+      - messageUnreadCounts
+  data:
+    redis:
+      host: ${FORUM_REDIS_HOST:127.0.0.1}
+      port: ${FORUM_REDIS_PORT:6379}
+      password: ${FORUM_REDIS_PASSWORD:}
+      database: ${FORUM_REDIS_DATABASE:0}
+      timeout: 3s
+      lettuce:
+        pool:
+          max-active: ${FORUM_REDIS_POOL_MAX_ACTIVE:16}
+          max-idle: ${FORUM_REDIS_POOL_MAX_IDLE:8}
+          min-idle: ${FORUM_REDIS_POOL_MIN_IDLE:2}
+          max-wait: ${FORUM_REDIS_POOL_MAX_WAIT:3s}
+  session:
+    store-type: redis
+    timeout: 12h
+    redis:
+      namespace: forum:session
+      flush-mode: on_save
+
+server:
+  servlet:
+    session:
+      cookie:
+        name: FORUMSESSION
+        http-only: true
+        same-site: lax
+        secure: ${FORUM_SESSION_COOKIE_SECURE:false}
+
+management:
+  health:
+    redis:
+      enabled: true

@@ -2,12 +2,14 @@ package com.xzy.forum.services.impl;
 
 import com.xzy.forum.common.ResultCode;
 import com.xzy.forum.dao.BoardMapper;
-import com.xzy.forum.services.IBoardService;
 import com.xzy.forum.model.Board;
+import com.xzy.forum.services.IBoardService;
 import com.xzy.forum.utils.ServiceValidationUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +43,10 @@ public class BoardServiceImpl implements IBoardService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "boards", allEntries = true),
+            @CacheEvict(cacheNames = "articleLists", allEntries = true)
+    })
     public void addOneArticleCount(Long boardId) {
         ServiceValidationUtils.requirePositiveId(boardId, ResultCode.FAILED_PARAMS_VALIDATE, "boardId");
         ServiceValidationUtils.requireNonNull(boardMapper.selectByPrimaryKey(boardId), ResultCode.FAILED_BOARD_NOT_EXISTS, "boardId", boardId);
@@ -57,6 +63,10 @@ public class BoardServiceImpl implements IBoardService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "boards", allEntries = true),
+            @CacheEvict(cacheNames = "articleLists", allEntries = true)
+    })
     public void subOneArticleCountById(Long id) {
         ServiceValidationUtils.requirePositiveId(id, ResultCode.FAILED_BOARD_ARTICLE_COUNT, "boardId");
         ServiceValidationUtils.requireNonNull(boardMapper.selectByPrimaryKey(id), ResultCode.FAILED_BOARD_NOT_EXISTS, "boardId", id);

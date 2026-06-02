@@ -6,13 +6,15 @@ import com.xzy.forum.dao.ArticleMapper;
 import com.xzy.forum.exception.ApplicationException;
 import com.xzy.forum.model.Article;
 import com.xzy.forum.model.Board;
-import com.xzy.forum.services.IArticleService;
 import com.xzy.forum.services.IBoardService;
+import com.xzy.forum.services.IArticleService;
 import com.xzy.forum.services.IUserService;
 import com.xzy.forum.utils.ServiceValidationUtils;
 import com.xzy.forum.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,7 @@ public class ArticleServiceImpl implements IArticleService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "articleLists", allEntries = true)
     public void create(Article article) {
         if (article == null || article.getUserId() == null || article.getBoardId() == null
                 || StringUtils.isEmpty(article.getTitle()) || StringUtils.isEmpty(article.getContent())) {
@@ -62,11 +65,13 @@ public class ArticleServiceImpl implements IArticleService {
     }
 
     @Override
+    @Cacheable(cacheNames = "articleLists", key = "'all:keyword:' + (#keyword == null ? '' : #keyword)")
     public List<Article> selectAll(String keyword) {
         return articleMapper.selectAll(normalizeKeyword(keyword));
     }
 
     @Override
+    @Cacheable(cacheNames = "articleLists", key = "'board:' + #boardId + ':keyword:' + (#keyword == null ? '' : #keyword)")
     public List<Article> selectAllByBoardId(Long boardId, String keyword) {
         requirePositiveId(boardId, ResultCode.FAILED_PARAMS_VALIDATE, "boardId");
 
@@ -80,6 +85,7 @@ public class ArticleServiceImpl implements IArticleService {
     }
 
     @Override
+    @Cacheable(cacheNames = "articleLists", key = "'user:' + #userId")
     public List<Article> selectAllByUserId(Long userId) {
         requirePositiveId(userId, ResultCode.FAILED_PARAMS_VALIDATE, "userId");
         ServiceValidationUtils.requireNonNull(userService.selectById(userId), ResultCode.FAILED_USER_NOT_EXISTS, "userId", userId);
@@ -112,6 +118,7 @@ public class ArticleServiceImpl implements IArticleService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "articleLists", allEntries = true)
     public void modify(Long id, String title, String content) {
         requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "articleId");
         if (StringUtils.isEmpty(title) || StringUtils.isEmpty(content)) {
@@ -143,6 +150,7 @@ public class ArticleServiceImpl implements IArticleService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "articleLists", allEntries = true)
     public void thumbsUpById(Long id) {
         requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "articleId");
 
@@ -165,6 +173,7 @@ public class ArticleServiceImpl implements IArticleService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "articleLists", allEntries = true)
     public void deleteById(Long id) {
         requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "articleId");
 
@@ -190,6 +199,7 @@ public class ArticleServiceImpl implements IArticleService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "articleLists", allEntries = true)
     public void addOneReplyCountById(Long id) {
         requirePositiveId(id, ResultCode.ERROR_IS_NULL, "articleId");
 

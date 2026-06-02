@@ -22,6 +22,8 @@ spring:
     cache-names:
       - boards
       - users
+      - articleLists
+      - messageUnreadCounts
     caffeine:
       spec: maximumSize=200,expireAfterWrite=10m
 
@@ -78,5 +80,3 @@ info:
   app:
     name: Forum System
     description: 站内私信、用户中心、搜索和运维监控增强版论坛系统
-
-

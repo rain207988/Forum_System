@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,7 +84,10 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     @Transactional
-    @CacheEvict(cacheNames = "users", key = "#id")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "users", key = "#id"),
+            @CacheEvict(cacheNames = "articleLists", allEntries = true)
+    })
     public User updateProfile(Long id, User updateUser) {
         ServiceValidationUtils.requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "userId");
         User currentUser = ServiceValidationUtils.requireNonNull(userMapper.selectByPrimaryKey(id), ResultCode.FAILED_USER_NOT_EXISTS, "userId", id);
@@ -128,7 +132,10 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     @Transactional
-    @CacheEvict(cacheNames = "users", key = "#id")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "users", key = "#id"),
+            @CacheEvict(cacheNames = "articleLists", allEntries = true)
+    })
     public void changePassword(Long id, String oldPassword, String newPassword, String passwordRepeat) {
         ServiceValidationUtils.requirePositiveId(id, ResultCode.FAILED_PARAMS_VALIDATE, "userId");
         if (StringUtils.isEmpty(oldPassword) || StringUtils.isEmpty(newPassword) || StringUtils.isEmpty(passwordRepeat)) {

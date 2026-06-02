@@ -12,6 +12,9 @@ import com.xzy.forum.utils.ServiceValidationUtils;
 import com.xzy.forum.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,9 @@ public class MessageServiceImpl implements IMessageService {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired(required = false)
+    private CacheManager cacheManager;
 
     @Override
     @Transactional
@@ -53,6 +59,7 @@ public class MessageServiceImpl implements IMessageService {
         Message message = buildMessage(postUserId, receiveUserId, content);
         int row = messageMapper.insertSelective(message);
         ServiceValidationUtils.requireAffectedOneRow(row, ResultCode.FAILED_CREATE, "发送站内信失败", receiveUserId);
+        evictUnreadCountCache(receiveUserId);
     }
 
     @Override
@@ -77,6 +84,7 @@ public class MessageServiceImpl implements IMessageService {
         ServiceValidationUtils.requireAffectedOneRow(updatedRow, ResultCode.FAILED, "更新站内信回复状态失败", repliedId);
 
         send(currentUserId, originalMessage.getPostUserId(), content);
+        evictUnreadCountCache(currentUserId);
     }
 
     @Override
@@ -86,6 +94,7 @@ public class MessageServiceImpl implements IMessageService {
     }
 
     @Override
+    @Cacheable(cacheNames = "messageUnreadCounts", key = "#receiveUserId")
     public int countUnread(Long receiveUserId) {
         ServiceValidationUtils.requirePositiveId(receiveUserId, ResultCode.FAILED_PARAMS_VALIDATE, "receiveUserId");
         return messageMapper.countUnreadByReceiveUserId(receiveUserId);
@@ -107,6 +116,7 @@ public class MessageServiceImpl implements IMessageService {
 
         int row = messageMapper.markRead(messageId, currentUserId);
         ServiceValidationUtils.requireAffectedOneRow(row, ResultCode.FAILED, "标记站内信已读失败", messageId);
+        evictUnreadCountCache(currentUserId);
     }
 
     private Message buildMessage(Long postUserId, Long receiveUserId, String content) {
@@ -120,5 +130,15 @@ public class MessageServiceImpl implements IMessageService {
         message.setCreateTime(now);
         message.setUpdateTime(now);
         return message;
+    }
+
+    private void evictUnreadCountCache(Long userId) {
+        if (cacheManager == null || userId == null) {
+            return;
+        }
+        Cache cache = cacheManager.getCache("messageUnreadCounts");
+        if (cache != null) {
+            cache.evict(userId);
+        }
     }
 }
