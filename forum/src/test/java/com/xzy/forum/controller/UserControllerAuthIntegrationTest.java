@@ -130,6 +130,15 @@ class UserControllerAuthIntegrationTest {
                 .andExpect(jsonPath("$.code").value(1001));
     }
 
+    @Test
+    void shouldReturnUnauthorizedForMalformedAccessToken() throws Exception {
+        mockMvc.perform(get("/user/info")
+                        .header("Authorization", bearerToken("invalid-token")))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(1001))
+                .andExpect(jsonPath("$.message").value("登录状态已失效，请重新登录"));
+    }
+
     private JsonNode loginAndGetAuthData(String username, String password) throws Exception {
         MvcResult result = mockMvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)

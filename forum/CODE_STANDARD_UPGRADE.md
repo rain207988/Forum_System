@@ -1,232 +1,190 @@
 # Forum 代码规范整改说明
 
-## 1. 这轮整改做了什么
+## 本次整改目标
 
-这次不是继续堆功能，而是对项目主代码做了一轮偏“公司代码审查标准”的规范整改，重点处理了下面几类问题：
+这轮工作聚焦在“更接近公司级代码规范”的几类问题上，不继续堆功能，而是优先处理会影响维护性、稳定性和安全默认值的代码：
 
-- 统一把核心控制器、服务类从字段注入改成构造器注入
-- 修复一批命名不规范的方法名
-- 去掉 Redis 降级链路里的静默吞异常
-- 清理前端公共脚本中的低质量调试代码和可读性问题
+- 依赖注入方式不统一，仍有字段注入残留
+- 认证拦截链路对非法 token 的兜底不够稳定
+- 文章浏览数、点赞数、回复数使用读改写，存在并发丢计数风险
+- 默认配置里测试接口暴露、数据库密码存在明文默认值
+- 少量服务代码存在旧式校验和日志写法
 
-这类改动表面上不像新功能那么显眼，但对后续维护、测试、排障和团队协作都很重要。
+## 实际修改内容
 
----
-
-## 2. 为什么这些地方不符合公司级别代码规范
-
-在真实团队里，这几类写法通常都会被 code review 卡住：
-
-### 2.1 字段注入 `@Autowired`
-
-字段注入的问题主要有：
-
-- 依赖关系不够显式，类一打开看不出完整依赖
-- 成员变量不能自然声明为 `final`
-- 单元测试或构造对象时不够方便
-- 更容易出现隐藏依赖越来越多的问题
-
-所以更常见、更规范的做法是：
-
-- 用构造器注入
-- 把依赖声明成 `final`
-
----
-
-### 2.2 命名不规范
-
-例如原来存在：
-
-- `createnormalUser`
-- `addOneArticleCountById`
-- `subOneArticleCountById`
-
-这些命名的问题是：
-
-- 不符合标准驼峰命名
-- 动作语义不统一
-- `addOne` / `subOne` 更像口语，不像团队内长期维护的接口命名
-
-正式项目里，更推荐：
-
-- `createNormalUser`
-- `incrementArticleCountById`
-- `decrementArticleCountById`
-
-这样一眼就能看懂行为，而且接口命名风格统一。
-
----
-
-### 2.3 静默吞异常
-
-原来 Redis 相关逻辑里有多处：
-
-- `catch (Exception ignored)`
-
-这种写法最大的问题不是“会不会崩”，而是：
-
-- 线上一旦 Redis 出故障，日志里没有任何有效信息
-- 代码虽然降级成功了，但运维和开发并不知道发生过降级
-- 后面排查登录态、限流、token 黑名单问题会非常痛苦
-
-公司项目里，允许降级，但不应该无声失败。
-
----
-
-### 2.4 前端公共脚本里保留调试代码
-
-`common.js` 里有一些明显的调试输出和布尔写法问题，例如：
-
-- `if (xxx == false)`
-- 多余的 `console.log`
-
-这类代码在开发阶段无所谓，但进入主干后会降低公共脚本质量，也容易让后续排查日志时出现噪音。
-
----
-
-## 3. 具体修改了哪里
-
-### 3.1 构造器注入整改
+### 1. 统一部分核心类为构造器注入
 
 修改文件：
 
-- [src/main/java/com/xzy/forum/controller/UserController.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/controller/UserController.java)
-- [src/main/java/com/xzy/forum/controller/BoardController.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/controller/BoardController.java)
-- [src/main/java/com/xzy/forum/controller/ArticleController.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/controller/ArticleController.java)
-- [src/main/java/com/xzy/forum/controller/MessageController.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/controller/MessageController.java)
-- [src/main/java/com/xzy/forum/interceptor/AppInterceptorConfigurer.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/interceptor/AppInterceptorConfigurer.java)
-- [src/main/java/com/xzy/forum/services/impl/UserServiceImpl.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/services/impl/UserServiceImpl.java)
-- [src/main/java/com/xzy/forum/services/impl/BoardServiceImpl.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/services/impl/BoardServiceImpl.java)
-- [src/main/java/com/xzy/forum/services/impl/ArticleServiceImpl.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/services/impl/ArticleServiceImpl.java)
-- [src/main/java/com/xzy/forum/services/impl/MessageServiceImpl.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/services/impl/MessageServiceImpl.java)
+- `src/main/java/com/xzy/forum/controller/ArticleReplyController.java`
+- `src/main/java/com/xzy/forum/services/impl/ArticleReplyServiceImpl.java`
 
-这部分修改内容：
+修改方式：
 
-- 移除字段上的 `@Autowired`
-- 依赖改成 `private final`
-- 统一补上构造器注入
-- 对可选依赖 `CacheManager` 使用 `ObjectProvider` 获取，避免强依赖
+- 移除字段注入
+- 依赖改为 `private final`
+- 使用构造器显式声明依赖
 
-整改后的好处：
+为什么改：
 
-- 依赖更明确
-- 类的可维护性更好
-- 更方便做单测和重构
-- 更接近主流 Spring 团队规范
+- 字段注入隐藏依赖，不利于 code review
+- 构造器注入更利于测试和重构
+- `final` 依赖能降低误改和空注入风险
 
----
+修改后的好处：
 
-### 3.2 服务层方法命名整改
+- 依赖关系一眼可见
+- 更符合团队常见 Spring 编码规范
+- 后续做单测或重构更方便
+
+### 2. 修复认证拦截器对非法 token 的异常兜底
 
 修改文件：
 
-- [src/main/java/com/xzy/forum/services/IUserService.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/services/IUserService.java)
-- [src/main/java/com/xzy/forum/services/IBoardService.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/services/IBoardService.java)
-- [src/main/java/com/xzy/forum/services/impl/UserServiceImpl.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/services/impl/UserServiceImpl.java)
-- [src/main/java/com/xzy/forum/services/impl/BoardServiceImpl.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/services/impl/BoardServiceImpl.java)
-- [src/main/java/com/xzy/forum/services/impl/ArticleServiceImpl.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/services/impl/ArticleServiceImpl.java)
-- [src/main/java/com/xzy/forum/controller/UserController.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/controller/UserController.java)
-- [src/test/java/com/xzy/forum/services/impl/BoardServiceImplTest.java](D:/code_java/forum/Forum_System/forum/src/test/java/com/xzy/forum/services/impl/BoardServiceImplTest.java)
+- `src/main/java/com/xzy/forum/interceptor/LoginInterceptor.java`
+- `src/test/java/com/xzy/forum/controller/UserControllerAuthIntegrationTest.java`
 
-重命名如下：
+修改方式：
 
-- `createnormalUser` -> `createNormalUser`
-- `addOneArticleCountById` -> `incrementArticleCountById`
-- `subOneArticleCountById` -> `decrementArticleCountById`
-- `addOneArticleCount` -> `incrementArticleCountById`
+- 在拦截器里捕获 `ApplicationException`
+- 非法/过期/损坏 token 统一转换为 `401 Unauthorized`
+- 增加一条非法 access token 的集成测试
 
-整改后的好处：
+为什么改：
 
-- 命名语义统一
-- 接口更容易理解
-- 降低新成员接手时的理解成本
-- 后续继续扩展统计字段时命名风格更稳定
+- 之前这类异常可能直接冒到全局异常处理，行为不够稳定
+- 鉴权失败应该在拦截层就被明确识别，而不是表现成通用服务异常
 
----
+修改后的好处：
 
-### 3.3 Redis 降级异常处理整改
+- 前后端对登录态失效的处理更稳定
+- 更符合网关/鉴权中间层的职责边界
+- 线上排障时更容易区分“未授权”和“系统异常”
+
+### 3. 将文章计数更新改为数据库原子自增
 
 修改文件：
 
-- [src/main/java/com/xzy/forum/service/RateLimitService.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/service/RateLimitService.java)
-- [src/main/java/com/xzy/forum/auth/TokenRevocationService.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/auth/TokenRevocationService.java)
-- [src/main/java/com/xzy/forum/auth/RefreshTokenSessionService.java](D:/code_java/forum/Forum_System/forum/src/main/java/com/xzy/forum/auth/RefreshTokenSessionService.java)
+- `src/main/java/com/xzy/forum/dao/ArticleMapper.java`
+- `src/main/resources/mapper/ArticleMapper.xml`
+- `src/main/java/com/xzy/forum/services/impl/ArticleServiceImpl.java`
 
-这部分改动：
+修改方式：
 
-- 给类补上日志能力
-- 把 `catch (Exception ignored)` 改成带上下文的 `warn` 日志
-- 仍然保留本地内存降级逻辑，不影响本地开发和服务可用性
+- 新增 `incrementVisitCountById`
+- 新增 `incrementLikeCountById`
+- 新增 `incrementReplyCountById`
+- 服务层从“先查再写”改成直接执行数据库自增
 
-整改后的好处：
+为什么改：
 
-- Redis 故障时可以快速定位问题
-- 能区分“正常走 Redis”还是“已经降级到本地内存”
-- 更符合线上可观测性要求
+- 原来的读改写方式在并发下会发生覆盖，导致浏览数、点赞数、回复数丢失
+- 这类问题本地单人测试很难看出来，但线上很常见
 
----
+修改后的好处：
 
-### 3.4 前端公共脚本清理
+- 降低并发丢计数风险
+- 代码语义更明确
+- 更符合高频计数场景的常见实现方式
+
+### 4. 修正一处参数校验错误码不准确的问题
 
 修改文件：
 
-- [src/main/resources/static/js/common.js](D:/code_java/forum/Forum_System/forum/src/main/resources/static/js/common.js)
+- `src/main/java/com/xzy/forum/services/impl/BoardServiceImpl.java`
+- `src/main/java/com/xzy/forum/services/impl/ArticleServiceImpl.java`
 
-这部分改动：
+修改方式：
 
-- `if (boardItem.hasClass('active') == false)` 改成 `if (!boardItem.hasClass('active'))`
-- 删除帖子列表和站内信接收信息相关的临时 `console.log`
+- 无效 `boardId` / `articleId` 参数改为返回参数校验错误码，而不是业务统计类错误码
 
-整改后的好处：
+为什么改：
 
-- 公共脚本更干净
-- 可读性更好
-- 线上浏览器控制台噪音更少
+- 参数非法和业务处理失败是两类不同问题
+- 错误码不准确会误导前端和排障人员
 
----
+修改后的好处：
 
-## 4. 这轮整改后项目有哪些直接收益
+- 错误语义更清晰
+- 接口契约更稳定
+- 更利于统一异常码治理
 
-这轮改完之后，项目虽然业务功能没变多，但代码质量明显更像可长期维护的项目：
+### 5. 收紧默认配置的安全基线
 
-- 依赖关系更加显式
-- 核心服务命名更加统一
-- Redis 降级链路具备基本可观测性
-- 公共前端脚本更加整洁
-- 后续继续做重构、补单测、拆模块时成本更低
+修改文件：
 
-从“个人项目能跑”往“团队项目能接手、能维护、能排障”又往前走了一步。
+- `src/main/java/com/xzy/forum/config/ForumFeatureProperties.java`
+- `src/main/java/com/xzy/forum/config/SwaggerConfig.java`
+- `src/main/java/com/xzy/forum/controller/TestController.java`
+- `src/main/resources/application.yml`
 
----
+修改方式：
 
-## 5. 这轮整改如何验证
+- `test-api-enabled` 默认值改为 `false`
+- `TestController` 去掉 `matchIfMissing = true`
+- `SwaggerConfig` 去掉 `matchIfMissing = true`
+- `FORUM_DB_PASSWORD` 不再带明文默认密码
 
-建议验证方式：
+为什么改：
 
-### 5.1 默认测试
+- 测试接口不应在默认配置缺失时自动暴露
+- 安全相关开关更适合“显式开启”，不适合“缺省开启”
+- 明文默认密码是公司代码审查中的高频问题
+
+修改后的好处：
+
+- 默认运行基线更安全
+- 更接近生产配置思路
+- 减少把测试能力误暴露到非测试环境的风险
+
+### 6. 规范回复服务的输入处理和日志
+
+修改文件：
+
+- `src/main/java/com/xzy/forum/services/impl/ArticleReplyServiceImpl.java`
+
+修改方式：
+
+- 回复内容落库前做 `trim`
+- 用统一校验工具校验 `articleId`
+- 把字符串拼接日志改成占位符日志
+
+为什么改：
+
+- 输入值不规整会带来脏数据
+- 手写参数判断和字符串拼接日志可维护性较差
+
+修改后的好处：
+
+- 数据更整洁
+- 日志更规范
+- 服务层风格更统一
+
+## 验证方式
+
+建议直接执行：
 
 ```powershell
 .\mvnw.cmd test
 ```
 
-### 5.2 本地 MySQL 的 message 链路测试
+如果只想先验证本轮最关键改动，也可以重点看：
 
-```powershell
-.\mvnw.cmd test "-Dforum.mysql.it=true"
-```
+- `UserControllerAuthIntegrationTest`
+- `ArticleServiceImplTest`
+- `BoardServiceImplTest`
 
-如果这两组都通过，说明这轮规范整改没有破坏默认开发链路，也没有破坏你之前要求保留的本地 MySQL 站内信验证链路。
+## 本次整改后的直接收益
 
----
+- 认证失败行为更稳定，不会把非法 token 混成普通系统异常
+- 文章计数逻辑更适合并发场景
+- 默认配置更安全，不再默认暴露测试接口和明文密码
+- 依赖关系更显式，后续维护和测试成本更低
+- 服务层校验和日志风格更统一，更接近团队协作代码
 
-## 6. 下一轮还可以继续补哪些“公司级规范”
+## 后续还可以继续推进的方向
 
-如果继续按公司级别代码标准推进，下一轮建议优先看：
-
-1. 统一 Controller 层参数对象，减少大量 `@RequestParam`
-2. 补充更系统的 DTO / VO 分层，避免直接暴露数据库模型
-3. 给核心 Service 增加更完整的单元测试和边界场景测试
-4. 统一异常码、日志字段、审计日志格式
-5. 对前端公共 API 请求层做更清晰的封装，减少页面脚本直连接口
-
-这些会比单纯“修几个命名”更进一步，把项目往真正的团队工程质量继续推进。
+- 给 Controller 层补 DTO，请求参数不要长期散落在大量 `@RequestParam`
+- 给核心 Service 补更多异常分支测试和并发场景测试
+- 继续清理剩余旧风格类中的注入、注释和命名问题
+- 逐步把接口返回对象和数据库实体解耦
