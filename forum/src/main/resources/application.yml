@@ -61,6 +61,7 @@ logging:
   pattern:
     dateformat:
       default: yyyy-MM-dd HH:mm:ss # 定义默认的日期时间格式
+    level: "%5p [traceId:%X{traceId:-N/A}]"
   file:
     path: ./logs  #⽇志保存⽬录
   level:
@@ -105,6 +106,10 @@ forum:
     message-reply:
       max-requests: ${FORUM_RATE_LIMIT_MESSAGE_REPLY_MAX_REQUESTS:30}
       window-seconds: ${FORUM_RATE_LIMIT_MESSAGE_REPLY_WINDOW_SECONDS:60}
+  observability:
+    request-trace-enabled: ${FORUM_OBSERVABILITY_REQUEST_TRACE_ENABLED:true}
+    trace-header-name: ${FORUM_OBSERVABILITY_TRACE_HEADER_NAME:X-Trace-Id}
+    slow-service-threshold-ms: ${FORUM_OBSERVABILITY_SLOW_SERVICE_THRESHOLD_MS:300}
 
 management:
   endpoints:
