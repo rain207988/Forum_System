@@ -34,9 +34,9 @@ public class MessageController {
     }
 
     @PostMapping("/send")
-    public AppResult send(HttpServletRequest request,
-                          @RequestParam("receiveUserId") Long receiveUserId,
-                          @RequestParam("content") String content) {
+    public AppResult<Void> send(HttpServletRequest request,
+                                @RequestParam("receiveUserId") Long receiveUserId,
+                                @RequestParam("content") String content) {
         User currentUser = requireLoginUser();
         rateLimitService.check(
                 rateLimitProperties.getMessageSend(),
@@ -48,9 +48,9 @@ public class MessageController {
     }
 
     @PostMapping("/reply")
-    public AppResult reply(HttpServletRequest request,
-                           @RequestParam("repliedId") Long repliedId,
-                           @RequestParam("content") String content) {
+    public AppResult<Void> reply(HttpServletRequest request,
+                                 @RequestParam("repliedId") Long repliedId,
+                                 @RequestParam("content") String content) {
         User currentUser = requireLoginUser();
         rateLimitService.check(
                 rateLimitProperties.getMessageReply(),
@@ -74,7 +74,7 @@ public class MessageController {
     }
 
     @PostMapping("/markRead")
-    public AppResult markRead(@RequestParam("id") Long id) {
+    public AppResult<Void> markRead(@RequestParam("id") Long id) {
         User currentUser = requireLoginUser();
         messageService.markRead(id, currentUser.getId());
         return AppResult.success("已标记为已读", null);

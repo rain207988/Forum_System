@@ -62,7 +62,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "服务器内部错误")
     })
     @PostMapping("/register")
-    public AppResult register(
+    public AppResult<Void> register(
             HttpServletRequest request,
             @Parameter(description = "用户名", required = true, example = "zhangsan")
             @RequestParam String username,
@@ -157,8 +157,8 @@ public class UserController {
 
     @RequestMapping("/logout")
     @Operation(summary = "用户登出", description = "用户登出系统")
-    public AppResult logout(@RequestHeader(value = "Authorization", required = false) String authorizationHeader,
-                            @RequestParam(value = "refreshToken", required = false) String refreshToken) {
+    public AppResult<Void> logout(@RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+                                  @RequestParam(value = "refreshToken", required = false) String refreshToken) {
         String token = jwtAuthenticationService.resolveToken(authorizationHeader);
         if (token != null) {
             tokenRevocationService.revoke(token, jwtAuthenticationService.getExpiresAt(token));
@@ -205,10 +205,10 @@ public class UserController {
     }
 
     @PostMapping("/modifyPwd")
-    public AppResult modifyPwd(@RequestParam("oldPassword") String oldPassword,
-                               @RequestParam("newPassword") String newPassword,
-                               @RequestParam("passwordRepeat") String passwordRepeat,
-                               @RequestParam(value = "refreshToken", required = false) String refreshToken) {
+    public AppResult<Void> modifyPwd(@RequestParam("oldPassword") String oldPassword,
+                                     @RequestParam("newPassword") String newPassword,
+                                     @RequestParam("passwordRepeat") String passwordRepeat,
+                                     @RequestParam(value = "refreshToken", required = false) String refreshToken) {
         User currentUser = requireLoginUser();
         userService.changePassword(currentUser.getId(), oldPassword, newPassword, passwordRepeat);
         revokeRefreshSession(refreshToken);

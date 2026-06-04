@@ -23,39 +23,39 @@ public class AppResult<T> {
         this.data = data;
     }
 
-    public static AppResult success() {
-        return new AppResult(ResultCode.SUCCESS.getCode(),
+    public static <T> AppResult<T> success() {
+        return new AppResult<>(ResultCode.SUCCESS.getCode(),
                 ResultCode.SUCCESS.getMessage());
     }
 
     public static <T> AppResult<T> success(T data) {
-        return new AppResult(ResultCode.SUCCESS.getCode(),
+        return new AppResult<>(ResultCode.SUCCESS.getCode(),
                 ResultCode.SUCCESS.getMessage(), data);
     }
 
     public static <T> AppResult<T> success(String message, T data) {
-        return new AppResult(ResultCode.SUCCESS.getCode(), message, data);
+        return new AppResult<>(ResultCode.SUCCESS.getCode(), message, data);
     }
 
-    public static AppResult failed(ResultCode failed, String message) {
-        return new AppResult(failed.getCode(), message);
+    public static <T> AppResult<T> failed(ResultCode failed, String message) {
+        return new AppResult<>(failed.getCode(), message);
     }
 
     public static <T> AppResult<T> failed(String message) {
-        return new AppResult(ResultCode.FAILED.getCode(), message);
+        return new AppResult<>(ResultCode.FAILED.getCode(), message);
     }
 
     public static <T> AppResult<T> failed(T data) {
-        return new AppResult(ResultCode.FAILED.getCode(),
+        return new AppResult<>(ResultCode.FAILED.getCode(),
                 ResultCode.FAILED.getMessage(), data);
     }
 
-    public static AppResult failed(ResultCode resultCode) {
-        return new AppResult(resultCode.getCode(), resultCode.getMessage());
+    public static <T> AppResult<T> failed(ResultCode resultCode) {
+        return new AppResult<>(resultCode.getCode(), resultCode.getMessage());
     }
 
     public static <T> AppResult<T> failed(long code, String message) {
-        return new AppResult(code, message);
+        return new AppResult<>(code, message);
     }
 
     public long getCode() {

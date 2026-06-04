@@ -36,9 +36,9 @@ public class ArticleController {
     }
 
     @PostMapping("/create")
-    public AppResult create(@RequestParam("boardId") Long boardId,
-                            @RequestParam("title") String title,
-                            @RequestParam("content") String content) {
+    public AppResult<Void> create(@RequestParam("boardId") Long boardId,
+                                  @RequestParam("title") String title,
+                                  @RequestParam("content") String content) {
         User user = requireLoginUser();
         if (user.getState() == 1) {
             return AppResult.failed(ResultCode.FAILED_USER_BANNED);
@@ -93,9 +93,9 @@ public class ArticleController {
     }
 
     @PostMapping("/modify")
-    public AppResult modify(@RequestParam("id") Long id,
-                            @RequestParam("title") String title,
-                            @RequestParam("content") String content) {
+    public AppResult<Void> modify(@RequestParam("id") Long id,
+                                  @RequestParam("title") String title,
+                                  @RequestParam("content") String content) {
         User user = requireLoginUser();
         if (user.getState() == 1) {
             return AppResult.failed(ResultCode.FAILED_USER_BANNED);
@@ -121,7 +121,7 @@ public class ArticleController {
     }
 
     @PostMapping("/thumbsUp")
-    public AppResult thumbsUp(@RequestParam("id") @NonNull Long id) {
+    public AppResult<Void> thumbsUp(@RequestParam("id") @NonNull Long id) {
         User user = requireLoginUser();
         if (user.getState() == 1) {
             log.warn(ResultCode.FAILED_USER_BANNED.toString());
@@ -133,7 +133,7 @@ public class ArticleController {
     }
 
     @PostMapping("/delete")
-    public AppResult deleteById(@RequestParam("id") Long id) {
+    public AppResult<Void> deleteById(@RequestParam("id") Long id) {
         User user = requireLoginUser();
         Article article = articleService.selectById(id);
 

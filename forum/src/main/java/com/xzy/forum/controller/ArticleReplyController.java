@@ -30,8 +30,8 @@ public class ArticleReplyController {
     }
 
     @PostMapping("/create")
-    public AppResult create(@RequestParam("articleId") @NonNull Long articleId,
-                            @RequestParam("content") @NonNull String content) {
+    public AppResult<Void> create(@RequestParam("articleId") @NonNull Long articleId,
+                                  @RequestParam("content") @NonNull String content) {
         User user = requireLoginUser();
         if (user.getState() == 1) {
             return AppResult.failed(ResultCode.FAILED_USER_BANNED);
